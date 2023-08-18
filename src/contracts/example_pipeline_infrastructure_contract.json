@@ -1,0 +1,30 @@
+{
+  "Infrastructure": {
+    "Version": "1.0.0",
+    "Compute": {
+      "Shared": false
+    },
+    "Orchestration": {
+      "Shared": false
+    },
+    "Storage": {
+      "Type": "disk",
+      "Shared": false
+    },
+    "Persistence": {
+      "Type": "database",
+      "Configuration": {}
+    },
+    "Identity": {
+      "Type": "authentication",
+      "Configuration": {}
+    },
+    "Environment": {
+      "Type": "production",
+      "Configuration": {}
+    },
+    "Monitoring": {
+      "MetricsEndpoint": "http://example.com/metrics"
+    }
+  }
+}
