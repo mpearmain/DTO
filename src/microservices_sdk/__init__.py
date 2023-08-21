@@ -1,4 +1,4 @@
-from .specification import Specification
-from .implementation import Implementation
-from .infrastructure import Infrastructure
+from .specification import Specification, SpecificationData
+from .implementation import Implementation, ImplementationData
+from .infrastructure import Infrastructure, InfrastructureData
 from .microservice import Microservice
