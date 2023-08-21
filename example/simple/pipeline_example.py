@@ -1,7 +1,5 @@
-from pipeline_sdk import Implementation, ImplementationData
-from pipeline_sdk import Infrastructure, InfrastructureData
-from pipeline_sdk import Specification, SpecificationData
-from pipeline_sdk import Pipeline
+from src.pipeline_sdk import Implementation, ImplementationData, Infrastructure, InfrastructureData, Specification, \
+    SpecificationData, Pipeline
 
 """For this pipeline we utilise the predefined standards and structures, in a more complete version the 
 infrastructure and implementation might well have more classes associated with them i.e QueryBuilder that are well 
@@ -22,13 +20,23 @@ implementation_instance = Implementation(
 infrastructure_instance = Infrastructure(
     infrastructure_metadata=InfrastructureData(
         Version="1.0.0",
-        Compute=Configuration(Type="shared", Configuration={"resourceRequirements": "High", "availabilityZone": "us-west-2"}),
-        Orchestration=Configuration(Type="workflow", Configuration={"workflowEngine": "Abstract Engine", "schedule": "Flexible"}),
+        Compute=Configuration(Type="shared",
+                              Configuration={"resourceRequirements": "High", "availabilityZone": "us-west-2"}),
+        Orchestration=Configuration(Type="workflow",
+                                    Configuration={"workflowEngine": "Abstract Engine", "schedule": "Flexible"}),
         Storage=Configuration(Type="cloud", Configuration={"storageClass": "Standard", "redundancy": "Multi-zone"}),
-        Persistence=Configuration(Type="cloud", Configuration={"storageType": "parquet", "cloudProvider": "AWS", "bucketName": "my-bucket", "region": "us-west-2", "accessKey": "$your-access-key", "secretKey": "$your-secret-key"}),
-        Identity=Configuration(Type="authentication", Configuration={"authService": "OAuth2", "authEndpoint": "https://auth.example.com"}),
-        Environment=Configuration(Type="production", Configuration={"deploymentZone": "us-west-2", "scalingPolicy": "auto", "environmentVariables": {"ENV": "production", "DEBUG": "false"}}),
-        Monitoring=Configuration(Type="endpoint", Configuration={"MetricsEndpoint": "http://example.com/metrics", "loggingLevel": "INFO", "alertingEmail": "alerts@example.com"})
+        Persistence=Configuration(Type="cloud", Configuration={"storageType": "parquet", "cloudProvider": "AWS",
+                                                               "bucketName": "my-bucket", "region": "us-west-2",
+                                                               "accessKey": "$your-access-key",
+                                                               "secretKey": "$your-secret-key"}),
+        Identity=Configuration(Type="authentication",
+                               Configuration={"authService": "OAuth2", "authEndpoint": "https://auth.example.com"}),
+        Environment=Configuration(Type="production",
+                                  Configuration={"deploymentZone": "us-west-2", "scalingPolicy": "auto",
+                                                 "environmentVariables": {"ENV": "production", "DEBUG": "false"}}),
+        Monitoring=Configuration(Type="endpoint",
+                                 Configuration={"MetricsEndpoint": "http://example.com/metrics", "loggingLevel": "INFO",
+                                                "alertingEmail": "alerts@example.com"})
     )
 )
 
@@ -53,7 +61,8 @@ specification_instance = Specification(
             ScalabilityInformation="Scalable up to 1000 users",
             SecurityCompliance="Compliant with company policy"
         ),
-        Dependencies=[Dependency(DependencyName="Database", DependencyType="internal", DependencyDetails="MySQL Database")],
+        Dependencies=[
+            Dependency(DependencyName="Database", DependencyType="internal", DependencyDetails="MySQL Database")],
         Interfaces=[Interface(Port=Port(Name="InputPort", Type="input", Services=["Service1", "Service2"]))],
         InternalResources=["Resource1", "Resource2"],
         DataContract=[
@@ -69,11 +78,15 @@ specification_instance = Specification(
                             Source="Source1",
                             Privacy="Public",
                             BusinessCriticality="High",
-                            Transformation=Transformation(Steps=[Step(Description="Step1", Dependencies=[Dependency(Name="Dependency1", Type="internal", Details="Details1")])])
+                            Transformation=Transformation(Steps=[Step(Description="Step1", Dependencies=[
+                                Dependency(Name="Dependency1", Type="internal", Details="Details1")])])
                         )
                     ],
-                    DataGovernance=DataGovernance(DataSteward="Steward1", DataQuality="High", DataClassification="Class1", DataRetention="5 years"),
-                    AccessControl=AccessControl(AuthenticationService="AuthService", AuthorizationService="AuthzService", AccessPolicies=["Policy1", "Policy2"])
+                    DataGovernance=DataGovernance(DataSteward="Steward1", DataQuality="High",
+                                                  DataClassification="Class1", DataRetention="5 years"),
+                    AccessControl=AccessControl(AuthenticationService="AuthService",
+                                                AuthorizationService="AuthzService",
+                                                AccessPolicies=["Policy1", "Policy2"])
                 )
             )
         ],
