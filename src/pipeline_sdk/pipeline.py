@@ -15,4 +15,3 @@ class Pipeline:
     def execute(self):
         # Code to execute the pipeline using the implementation, infrastructure, and specification
         pass
-

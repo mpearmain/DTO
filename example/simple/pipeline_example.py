@@ -1,4 +1,6 @@
-from src.pipeline_sdk import Implementation, Infrastructure, Specification, Pipeline
+from src.pipeline_sdk import Implementation, Infrastructure,  Pipeline, Specification, GeneralInformation, Contact, \
+    Dependency, Contract, Attribute, AuditInformation, UsageDocumentation, PortServices
+
 
 """For this pipeline we utilise the predefined standards and structures, in a more complete version the 
 infrastructure and implementation might well have more classes associated with them i.e QueryBuilder that are well 
@@ -25,34 +27,31 @@ specification_instance = (Specification()
         SecurityCompliance="Compliant with company policy"
     ))
     .add_dependency(Dependency(DependencyName="Database", DependencyType="internal", DependencyDetails="MySQL Database"))
-    .add_interface(Interface(Port=Port(Name="InputPort", Type="input", Services=["Service1", "Service2"])))
+    .add_interface(PortServices(Name="InputPort", Type="input", Services=["Service1", "Service2"]))
     .add_internal_resource("Resource1")
     .add_internal_resource("Resource2")
-    .add_data_contract(DataContract(
-        Contract=Contract(
-            Name="SampleContract",
-            Description="A sample data contract",
-            Attributes=[
-                Attribute(
-                    Name="Attribute1",
-                    Type="int",
-                    Description="An integer attribute",
-                    Source="Source1",
-                    Privacy="Public",
-                    BusinessCriticality="High",
-                    Transformation=Transformation(Steps=[Step(Description="Step1", Dependencies=[Dependency(Name="Dependency1", Type="internal", Details="Details1")])])
-                )
-            ],
-            DataGovernance=DataGovernance(DataSteward="Steward1", DataQuality="High", DataClassification="Class1", DataRetention="5 years"),
-            AccessControl=AccessControl(AuthenticationService="AuthService", AuthorizationService="AuthzService", AccessPolicies=["Policy1", "Policy2"])
-        )
+    .add_data_contract(Contract(
+        Name="SampleContract",
+        Description="A sample data contract",
+        Attributes=[
+            Attribute(
+                Name="Attribute1",
+                Type="int",
+                Description="An integer attribute",
+                Source="Source1",
+                Privacy="Public",
+                BusinessCriticality="High",
+                Transformation={"Steps": [{"Description": "Step1", "Dependencies": [{"Name": "Dependency1", "Type": "internal", "Details": "Details1"}]}]}
+            )
+        ],
+        DataGovernance={"DataSteward": "Steward1", "DataQuality": "High", "DataClassification": "Class1", "DataRetention": "5 years"},
+        AccessControl={"AuthenticationService": "AuthService", "AuthorizationService": "AuthzService", "AccessPolicies": ["Policy1", "Policy2"]}
     ))
     .set_audit_information(AuditInformation(LastModified="2023-08-16T00:00:00Z", ModifiedBy="John Doe"))
     .add_usage_documentation(UsageDocumentation(DocName="UserGuide", DocLink="https://example.com/userguide"))
     .add_link("https://example.com/link1")
     .add_link("https://example.com/link2")
 )
-
 
 # Create Implementation instance
 implementation_instance = (Implementation()
@@ -84,4 +83,4 @@ pipeline_instance = Pipeline(
 )
 
 # Optionally, you can run the pipeline
-pipeline_instance.run()
+pipeline_instance.execute()

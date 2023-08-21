@@ -95,7 +95,7 @@ class Specification(SubComponent):
         self.metadata.Dependencies.append(dependency)
         return self
 
-    def add_interface(self, interface: Interface):
+    def add_interface(self, interface: PortServices):
         self.metadata.Interfaces.append(interface)
         return self
 
@@ -103,8 +103,8 @@ class Specification(SubComponent):
         self.metadata.InternalResources.append(resource)
         return self
 
-    def add_data_contract(self, data_contract: DataContract):
-        self.metadata.DataContract.append(data_contract)
+    def add_data_contract(self, contract: Contract):
+        self.metadata.DataContract.append(contract)
         return self
 
     def set_audit_information(self, audit_information: AuditInformation):
