@@ -20,9 +20,41 @@ class InfrastructureData(BaseModel):
 
 
 class Infrastructure(SubComponent):
-    def __init__(self, infrastructure_metadata: InfrastructureData):
+    def __init__(self):
         super().__init__()
-        self.metadata = infrastructure_metadata
+        self.metadata = InfrastructureData()
+
+    def set_version(self, version: str):
+        self.metadata.Version = version
+        return self
+
+    def set_compute(self, type: str, configuration: Dict[str, object]):
+        self.metadata.Compute = ComponentConfiguration(Type=type, Configuration=configuration)
+        return self
+
+    def set_orchestration(self, type: str, configuration: Dict[str, object]):
+        self.metadata.Orchestration = ComponentConfiguration(Type=type, Configuration=configuration)
+        return self
+
+    def set_storage(self, type: str, configuration: Dict[str, object]):
+        self.metadata.Storage = ComponentConfiguration(Type=type, Configuration=configuration)
+        return self
+
+    def set_persistence(self, type: str, configuration: Dict[str, object]):
+        self.metadata.Persistence = ComponentConfiguration(Type=type, Configuration=configuration)
+        return self
+
+    def set_identity(self, type: str, configuration: Dict[str, object]):
+        self.metadata.Identity = ComponentConfiguration(Type=type, Configuration=configuration)
+        return self
+
+    def set_environment(self, type: str, configuration: Dict[str, object]):
+        self.metadata.Environment = ComponentConfiguration(Type=type, Configuration=configuration)
+        return self
+
+    def set_monitoring(self, type: str, configuration: Dict[str, object]):
+        self.metadata.Monitoring = ComponentConfiguration(Type=type, Configuration=configuration)
+        return self
 
     def validate(self, **kwargs) -> None:
         pass  # Validation is handled automatically by Pydantic

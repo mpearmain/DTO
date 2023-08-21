@@ -79,9 +79,45 @@ class SpecificationData(BaseModel):
 
 
 class Specification(SubComponent):
-    def __init__(self, specification_metadata: SpecificationData):
+    def __init__(self):
         super().__init__()
-        self.metadata = specification_metadata
+        self.metadata = SpecificationData()
+
+    def set_type(self, type: str):
+        self.metadata.Type = type
+        return self
+
+    def set_general_information(self, general_information: GeneralInformation):
+        self.metadata.GeneralInformation = general_information
+        return self
+
+    def add_dependency(self, dependency: Dependency):
+        self.metadata.Dependencies.append(dependency)
+        return self
+
+    def add_interface(self, interface: Interface):
+        self.metadata.Interfaces.append(interface)
+        return self
+
+    def add_internal_resource(self, resource: str):
+        self.metadata.InternalResources.append(resource)
+        return self
+
+    def add_data_contract(self, data_contract: DataContract):
+        self.metadata.DataContract.append(data_contract)
+        return self
+
+    def set_audit_information(self, audit_information: AuditInformation):
+        self.metadata.AuditInformation = audit_information
+        return self
+
+    def add_usage_documentation(self, usage_documentation: UsageDocumentation):
+        self.metadata.UsageDocumentation.append(usage_documentation)
+        return self
+
+    def add_link(self, link: str):
+        self.metadata.Links.append(link)
+        return self
 
     def validate(self, **kwargs) -> None:
         pass  # Validation is handled automatically by Pydantic

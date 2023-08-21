@@ -24,9 +24,29 @@ class ImplementationData(BaseModel):
 
 
 class Implementation(SubComponent):
-    def __init__(self, implementation_metadata: ImplementationData):
+    def __init__(self):
         super().__init__()
-        self.metadata = implementation_metadata
+        self.metadata = ImplementationData()
+
+    def set_version(self, version: str):
+        self.metadata.Version = version
+        return self
+
+    def set_engine(self, engine: str):
+        self.metadata.Engine = engine
+        return self
+
+    def set_resources(self, cpu: int, ram: str, gpu: str = "None"):
+        self.metadata.Resources = Resources(CPU=cpu, RAM=ram, GPU=gpu)
+        return self
+
+    def set_execution(self, job_type: str, schedule_execution: str, interval: str):
+        self.metadata.Execution = Execution(JobType=job_type, ScheduleExecution=schedule_execution, Interval=interval)
+        return self
+
+    def set_query(self, query: str):
+        self.metadata.Query = query
+        return self
 
     def validate(self, **kwargs) -> None:
         pass  # Validation is handled automatically by Pydantic
