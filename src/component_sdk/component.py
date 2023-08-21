@@ -1,4 +1,12 @@
 from abc import ABC, abstractmethod
+from typing import Any, Dict, Optional
+
+"""
+This module defines two core classes, SubComponent and component_sdk, that serve as the foundation for building
+complex components in a system. SubComponent is an abstract base class that can be extended to handle specific
+logic for different types of components, such as specification, implementation, and infrastructure. component_sdk
+represents a complete component, consisting of one or more SubComponents.
+"""
 
 
 class SubComponent(ABC):
@@ -8,9 +16,9 @@ class SubComponent(ABC):
     """
 
     def __init__(self):
-        self.metadata = None  # Initialize as None; will be assigned after validation
+        self.metadata: Optional[Dict[str, Any]] = None  # Initialize as None; will be assigned after validation
 
-    def add_attr(self, key, value):
+    def add_attr(self, key: str, value: Any) -> 'SubComponent':
         """
         Adds an attribute to the concrete class.
 
@@ -21,7 +29,7 @@ class SubComponent(ABC):
         setattr(self, key, value)
         return self
 
-    def remove_attr(self, key):
+    def remove_attr(self, key: str) -> 'SubComponent':
         """
         Removes an attribute from the concrete class.
 
@@ -33,12 +41,12 @@ class SubComponent(ABC):
         return self
 
     @abstractmethod
-    def load_schema(self, **kwargs):
+    def load_schema(self, **kwargs) -> None:
         """Load the schema for this component. Must be implemented by subclasses."""
         pass
 
     @abstractmethod
-    def validate(self, **kwargs):
+    def validate(self, **kwargs) -> None:
         """
         Abstract method to validate the metadata.
         Subclasses must implement this method.
@@ -55,7 +63,8 @@ class Component:
     :param infrastructure: SubComponent object representing the infrastructure (optional).
     """
 
-    def __init__(self, specification, implementation=None, infrastructure=None):
+    def __init__(self, specification: SubComponent, implementation: Optional[SubComponent] = None,
+                 infrastructure: Optional[SubComponent] = None):
         if not isinstance(specification, SubComponent):
             raise ValueError("specification must be an instance of SubComponent class.")
         if implementation is not None and not isinstance(implementation, SubComponent):
@@ -66,12 +75,12 @@ class Component:
         self.specification = specification
         self.implementation = implementation
         self.infrastructure = infrastructure
-        self.configuration = None
+        self.configuration: Optional[Dict[str, Any]] = None
 
-    def configuration(self):
+    def configuration(self) -> Dict[str, Any]:
         """
         Bind all the components on its constituent parts to have the total configuration of the component.
-        Only the metadata contract is required. Implementation and infrastructure are optional.
+        Only the specification contract is required, implementation and infrastructure are optional.
 
         :return: A dictionary containing the combined configuration of the component.
         """
