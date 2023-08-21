@@ -2,10 +2,11 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
 """
-This module defines two core classes, SubComponent and component_sdk, that serve as the foundation for building
-complex components in a system. SubComponent is an abstract base class that can be extended to handle specific
-logic for different types of components, such as specification, implementation, and infrastructure. component_sdk
-represents a complete component, consisting of one or more SubComponents.
+This module defines two core classes, SubComponent and Component, that serve as the foundation classes for building
+complex components in a digital twin system. 
+SubComponent is an abstract base class that can be extended to handle specific logic for different types of components,
+such as specification, implementation, and infrastructure. 
+Component represents a complete component, consisting of one or more SubComponents.
 """
 
 
