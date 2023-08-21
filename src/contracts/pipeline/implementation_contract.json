@@ -2,11 +2,15 @@
   "Implementation": {
     "Version": "1.0.0",
     "Engine": "Spark",
-    "CPU": 8,
-    "RAM": "48Gi",
-    "JobType": "batch",
-    "ScheduleExecution": "00:00:00",
-    "Interval": "6hrs",
+    "Resources": {
+      "CPU": 8,
+      "RAM": "48Gi"
+    },
+    "Execution": {
+      "JobType": "batch",
+      "ScheduleExecution": "00:00:00",
+      "Interval": "6hrs"
+    },
     "Query": "SELECT foo, bar, baz FROM foobar f JOIN baz b ON f.id=b.id WHERE foo.blah > baz."
   }
 }

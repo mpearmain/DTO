@@ -10,24 +10,26 @@
         "Compute": {
           "type": "object",
           "properties": {
-            "Shared": { "type": "boolean" }
+            "Type": { "type": "string" },
+            "Configuration": { "type": "object" }
           },
-          "required": ["Shared"]
+          "required": ["Type", "Configuration"]
         },
         "Orchestration": {
           "type": "object",
           "properties": {
-            "Shared": { "type": "boolean" }
+            "Type": { "type": "string" },
+            "Configuration": { "type": "object" }
           },
-          "required": ["Shared"]
+          "required": ["Type", "Configuration"]
         },
         "Storage": {
           "type": "object",
           "properties": {
             "Type": { "type": "string" },
-            "Shared": { "type": "boolean" }
+            "Configuration": { "type": "object" }
           },
-          "required": ["Type", "Shared"]
+          "required": ["Type", "Configuration"]
         },
         "Persistence": {
           "type": "object",
@@ -56,9 +58,10 @@
         "Monitoring": {
           "type": "object",
           "properties": {
-            "MetricsEndpoint": { "type": "string", "format": "uri" }
+            "Type": { "type": "string" },
+            "Configuration": { "type": "object" }
           },
-          "required": ["MetricsEndpoint"]
+          "required": ["Type", "Configuration"]
         }
       },
       "required": ["Version", "Compute", "Orchestration", "Storage", "Persistence", "Identity", "Environment", "Monitoring"]

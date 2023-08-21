@@ -1,12 +1,10 @@
 from abc import ABC, abstractmethod
-from jsonschema import validate, ValidationError
 
 
-class Builder(ABC):
+class SubComponent(ABC):
     """
-    Abstract base class for building different parts of a component.
-
-    :param metadata: The metadata to be used in the building process (None until validated).
+    Abstract base class for handling subcomponents.
+    This class can be extended to handle specific logic for different types of components.
     """
 
     def __init__(self):
@@ -35,145 +33,55 @@ class Builder(ABC):
         return self
 
     @abstractmethod
-    def _validate(self, metadata):
+    def load_schema(self, **kwargs):
+        """Load the schema for this component. Must be implemented by subclasses."""
+        pass
+
+    @abstractmethod
+    def validate(self, **kwargs):
         """
         Abstract method to validate the metadata.
         Subclasses must implement this method.
-
-        :param metadata: The metadata to be validated.
         """
         pass
-
-
-class MetaDataContract(Builder):
-    """
-    Base class for handling metadata contracts.
-    This class can be extended to handle specific logic for different types of components.
-
-    By default we internally call teh _validate function when the class is instatiated to make sure the data matches a
-    json schema
-
-    :param contract_metadata: The contract metadata for a component.
-    :param schema_definition: JSON schema definition to check and enforce the metadata contract information is valid.
-    """
-
-    def __init__(self, contract_metadata, schema_definition):
-        super().__init__()  # Call the superclass constructor
-        if schema_definition is None:
-            raise ValueError("Schema definition must be provided.")
-        self.schema = schema_definition
-        if self._validate(contract_metadata):  # Validate the metadata
-            self.metadata = contract_metadata  # Assign the metadata after validation
-
-    def _validate(self, metadata):
-        """
-        Validate the metadata against the provided JSON schema.
-
-        :param metadata: The metadata to be validated.
-        :return: True if validation is successful, False otherwise.
-        """
-        try:
-            validate(metadata, self.schema)
-            self.metadata = metadata  # Assign the metadata after successful validation
-            return True
-        except ValidationError as e:
-            print(f"Validation error: {e.message}")
-            # Handle the error as needed, e.g., raise a custom exception, log the error, etc.
-            return False
-
-
-class Implementation(Builder):
-    """
-    Specific methods and attributes for Implementation.
-    This class can be extended to handle implementation-specific logic.
-
-    :param metadata_contract: MetaDataContract object.
-    :param implementation_metadata: Implementation-specific config metadata.
-    :param schema_definition: JSON schema definition to check and enforce the metadata contract information is valid.
-    """
-
-    def __init__(self, metadata_contract, implementation_metadata, schema_definition):
-        if not isinstance(metadata_contract, MetaDataContract):
-            raise ValueError("metadata_contract must be an instance of MetaDataContract.")
-        super().__init__()
-        self.metadata_contract = metadata_contract
-        if schema_definition is None:
-            raise ValueError("Schema definition must be provided.")
-        self.schema = schema_definition
-        if self._validate(implementation_metadata):  # Validate the metadata
-            self.metadata = implementation_metadata  # Assign the metadata after validation
-
-    def _validate(self, metadata):
-        try:
-            validate(metadata, self.schema)
-            return True
-        except ValidationError as e:
-            print(f"Validation error: {e.message}")
-            return False
-
-
-class Infrastructure(Builder):
-    """
-    Specific methods and attributes for Infrastructure.
-    This class can be extended to handle infrastructure-specific logic.
-
-    :param metadata_contract: MetaDataContract object.
-    :param infrastructure_metadata: Infrastructure-specific config metadata.
-    :param schema_definition: JSON schema definition to check and enforce the metadata contract information is valid.
-    """
-
-    def __init__(self, metadata_contract, infrastructure_metadata, schema_definition):
-        if not isinstance(metadata_contract, MetaDataContract):
-            raise ValueError("metadata_contract must be an instance of MetaDataContract.")
-        super().__init__()
-        self.metadata_contract = metadata_contract
-        if schema_definition is None:
-            raise ValueError("Schema definition must be provided.")
-        self.schema = schema_definition
-        if self._validate(infrastructure_metadata):  # Validate the metadata
-            self.metadata = infrastructure_metadata  # Assign the metadata after validation
-
-    def _validate(self, metadata):
-        try:
-            validate(metadata, self.schema)
-            return True
-        except ValidationError as e:
-            print(f"Validation error: {e.message}")
-            return False
 
 
 class Component:
     """
     Represents a complete component, consisting of metadata, implementation, and infrastructure.
 
-    :param metadata_contract: MetaDataContract object.
-    :param implementation: Implementation object.
-    :param infrastructure: Infrastructure object.
+    :param specification: SubComponent object representing the metadata contract.
+    :param implementation: SubComponent object representing the implementation (optional).
+    :param infrastructure: SubComponent object representing the infrastructure (optional).
     """
 
-    def __init__(self, metadata_contract, implementation=None, infrastructure=None):
-        if not isinstance(metadata_contract, MetaDataContract):
-            raise ValueError("metadata_contract must be an instance of MetaDataContract Class.")
-        if implementation is not None and not isinstance(implementation, Implementation):
-            raise ValueError("implementation must be an instance of Implementation Class or None.")
-        if infrastructure is not None and not isinstance(infrastructure, Infrastructure):
-            raise ValueError("infrastructure must be an instance of Infrastructure Class or None.")
+    def __init__(self, specification, implementation=None, infrastructure=None):
+        if not isinstance(specification, SubComponent):
+            raise ValueError("specification must be an instance of SubComponent class.")
+        if implementation is not None and not isinstance(implementation, SubComponent):
+            raise ValueError("implementation must be an instance of SubComponent class or None.")
+        if infrastructure is not None and not isinstance(infrastructure, SubComponent):
+            raise ValueError("infrastructure must be an instance of SubComponent class or None.")
 
-        self.metadata_contract = metadata_contract
+        self.specification = specification
         self.implementation = implementation
         self.infrastructure = infrastructure
         self.configuration = None
 
     def configuration(self):
         """
-        Bind all the components on its constituent parts to have the total configuration of the component
+        Bind all the components on its constituent parts to have the total configuration of the component.
         Only the metadata contract is required. Implementation and infrastructure are optional.
+
+        :return: A dictionary containing the combined configuration of the component.
         """
         # Assign the metadata to the configuration
-        self.configuration = {'metadata': self.metadata_contract.metadata}
+        self.configuration = {'metadata': self.specification.metadata}
 
         # Assign implementation and infrastructure if they exist
         for attr_name in ['implementation', 'infrastructure']:
             attr = getattr(self, attr_name, None)
             if attr:
                 self.configuration[attr_name] = attr.metadata
+
+        return self.configuration

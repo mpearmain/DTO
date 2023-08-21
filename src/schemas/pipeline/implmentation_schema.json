@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Pipeline Implementation Schema",
+  "title": "Component Implementation Schema",
   "type": "object",
   "properties": {
     "Implementation": {
@@ -9,47 +9,35 @@
         "Version": { "type": "string" },
         "Engine": {
           "type": "string",
-          "enum": [
-            "Spark",
-            "Flink",
-            "pandas",
-            "polars",
-            "duckdb"
-          ]
+          "enum": ["Spark", "Flink", "pandas", "polars", "duckdb", "custom"]
         },
-        "CPU": {
-          "type": "integer"
+        "Resources": {
+          "type": "object",
+          "properties": {
+            "CPU": { "type": "integer" },
+            "RAM": { "type": "string" },
+            "GPU": { "type": "string", "default": "None" }
+          },
+          "required": ["CPU", "RAM"]
         },
-        "RAM": {
-          "type": "string"
+        "Execution": {
+          "type": "object",
+          "properties": {
+            "JobType": {
+              "type": "string",
+              "enum": ["batch", "streaming"]
+            },
+            "ScheduleExecution": {
+              "type": "string",
+              "pattern": "^\\d{2}:\\d{2}:\\d{2}$"
+            },
+            "Interval": { "type": "string" }
+          },
+          "required": ["JobType", "ScheduleExecution"]
         },
-        "JobType": {
-          "type": "string",
-          "enum": [
-            "batch",
-            "streaming"
-          ]
-        },
-        "ScheduleExecution": {
-          "type": "string",
-          "pattern": "^\\d{2}:\\d{2}:\\d{2}$"
-        },
-        "Interval": {
-          "type": "string"
-        },
-        "Query": {
-          "type": "string"
-        }
+        "Query": { "type": "string" }
       },
-      "required": [
-        "Version",
-        "Engine",
-        "CPU",
-        "RAM",
-        "JobType",
-        "ScheduleExecution",
-        "Query"
-      ]
+      "required": ["Version", "Engine", "Resources", "Execution", "Query"]
     }
   },
   "required": [

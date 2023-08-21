@@ -2,29 +2,62 @@
   "Infrastructure": {
     "Version": "1.0.0",
     "Compute": {
-      "Shared": false
+      "Type": "shared",
+      "Configuration": {
+        "resourceRequirements": "High",
+        "availabilityZone": "us-west-2"
+      }
     },
     "Orchestration": {
-      "Shared": false
+      "Type": "workflow",
+      "Configuration": {
+        "workflowEngine": "Abstract Engine",
+        "schedule": "Flexible"
+      }
     },
     "Storage": {
-      "Type": "disk",
-      "Shared": false
+      "Type": "cloud",
+      "Configuration": {
+        "storageClass": "Standard",
+        "redundancy": "Multi-zone"
+      }
     },
     "Persistence": {
-      "Type": "database",
-      "Configuration": {}
+      "Type": "cloud",
+      "Configuration": {
+        "storageType": "parquet",
+        "cloudProvider": "AWS",
+        "bucketName": "my-bucket",
+        "region": "us-west-2",
+        "accessKey": "$your-access-key",
+        "secretKey": "$your-secret-key"
+      }
     },
     "Identity": {
       "Type": "authentication",
-      "Configuration": {}
+      "Configuration": {
+        "authService": "OAuth2",
+        "authEndpoint": "https://auth.example.com"
+      }
     },
     "Environment": {
       "Type": "production",
-      "Configuration": {}
+      "Configuration": {
+        "deploymentZone": "us-west-2",
+        "scalingPolicy": "auto",
+        "environmentVariables": {
+          "ENV": "production",
+          "DEBUG": "false"
+        }
+      }
     },
     "Monitoring": {
-      "MetricsEndpoint": "http://example.com/metrics"
+      "Type": "endpoint",
+      "Configuration": {
+        "MetricsEndpoint": "http://example.com/metrics",
+        "loggingLevel": "INFO",
+        "alertingEmail": "alerts@example.com"
+      }
     }
   }
 }
