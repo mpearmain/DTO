@@ -1,20 +1,40 @@
+"""
+This example demonstrates how to create a pipeline by loading JSON schemas and metadata from files.
+The SubComponent class is used to define different parts of the pipeline, such as specification, implementation, and
+infrastructure.
+Each SubComponent requires a JSON schema and metadata that conforms to that schema.
+
+1. JSON schemas are loaded from files to define the structure and validation rules for each subcomponent.
+2. Metadata for each subcomponent is loaded from JSON files.
+3. SubComponent instances are created for specification, implementation, and infrastructure, and the loaded metadata is
+assigned to them.
+4. The metadata is automatically validated against the corresponding JSON schema when assigned to a SubComponent.
+5. A Component instance is created using the SubComponent instances.
+6. The combined configuration of the component is retrieved.
+
+The validation ensures that the metadata for each subcomponent adheres to the structure and constraints defined in the
+corresponding JSON schema.
+"""
+
 import json
 from src.component import Component, SubComponent
 
-# Assuming you have the JSON schemas for each subcomponent
-specification_schema = {...}
-implementation_schema = {...}
-infrastructure_schema = {...}
+
+def load_json(file_path):
+    """Load JSON data from a file."""
+    with open(file_path) as file:
+        return json.load(file)
+
+
+# Loading the JSON schemas for each subcomponent
+specification_schema = load_json('./schemas/specification_schema.json')
+implementation_schema = load_json('./schemas/implementation_schema.json')
+infrastructure_schema = load_json('./schemas/infrastructure_schema.json')
 
 # Load metadata from JSON files
-with open('specification_metadata.json') as f:
-    specification_metadata = json.load(f)
-
-with open('implementation_metadata.json') as f:
-    implementation_metadata = json.load(f)
-
-with open('infrastructure_metadata.json') as f:
-    infrastructure_metadata = json.load(f)
+specification_metadata = load_json('./pipeline_config/specification_config.json')
+implementation_metadata = load_json('./pipeline_config/implementation_config.json')
+infrastructure_metadata = load_json('./pipeline_config/infrastructure_config.json')
 
 # Create SubComponent instances and set metadata directly
 specification = SubComponent(schema=specification_schema, type="Specification")
