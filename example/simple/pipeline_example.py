@@ -8,7 +8,7 @@ utilised by the SDK"""
 
 # Create Specification instance
 specification_instance = (Specification()
-    .set_type("MetaDataContract")
+    .set_type("Specification")
     .set_general_information(GeneralInformation(
         Name="SampleComponent",
         Version="1.0",

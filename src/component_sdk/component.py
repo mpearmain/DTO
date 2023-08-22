@@ -1,5 +1,11 @@
+import logging
+from jsonschema import validate
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 """
 This module defines two core classes, SubComponent and Component, that serve as the foundation classes for building
@@ -16,43 +22,106 @@ class SubComponent(ABC):
     This class can be extended to handle specific logic for different types of components.
     """
 
-    def __init__(self):
+    def __init__(self, schema):
         self.metadata: Optional[Dict[str, Any]] = None  # Initialize as None; will be assigned after validation
+        self._load_schema(schema=schema)
+
+    @classmethod
+    def _create_methods_from_schema(cls, schema: dict) -> None:
+        """
+        Dynamically creates setter methods for the class based on the provided JSON schema.
+
+        This method iterates through the properties defined in the schema and creates a setter method for each property.
+        The setter method will be named "set_<property_name>" and will call the add_attr method to add the attribute to
+        the metadata.
+
+        :param schema: A dictionary representing the JSON schema.
+        """
+
+        # Extract the properties from the schema. The schema is expected to have a specific structure where the
+        # properties are nested inside an object, so we access the first value of the "properties" dictionary.
+        properties = list(schema["properties"].values())[0]["properties"]
+
+        # Iterate through the properties, creating a setter method for each one.
+        for name, details in properties.items():
+            # Define the setter method. It takes two parameters: self and value.
+            # The name parameter is captured from the outer scope and used to call add_attr with the correct key.
+            def setter(self, value, name=name):
+                return self.add_attr(name, value)  # Call add_attr internally to add the attribute to the metadata
+
+            # Create the method name by converting the property name to lowercase and prefixing it with "set_".
+            method_name = f"set_{name.lower()}"
+
+            # Use setattr to add the setter method to the class. This makes the method available on all instances of the
+            # class.
+            setattr(cls, method_name, setter)
 
     def add_attr(self, key: str, value: Any) -> 'SubComponent':
         """
-        Adds an attribute to the concrete class.
+        Adds an attribute to the metadata and creates a corresponding setter method if it doesn't exist.
 
         :param key: Attribute name.
         :param value: Attribute value.
         :return: self
         """
-        setattr(self, key, value)
+        if self.metadata is None:
+            self.metadata = {}
+        self.metadata[key] = value
+        self.validate(self.metadata)  # Revalidate the metadata
+
+        # Check if a setter method already exists for this attribute
+        method_name = f"set_{key.lower()}"
+        if not hasattr(self, method_name):
+            # If not, create the setter method
+            def setter(self, value, key=key):
+                return self.add_attr(key, value)  # Call add_attr internally
+
+            setattr(self.__class__, method_name, setter)
+
         return self
 
     def remove_attr(self, key: str) -> 'SubComponent':
         """
-        Removes an attribute from the concrete class.
+        Removes an attribute from the metadata and deletes the corresponding setter method if it exists.
 
         :param key: Attribute name to be removed.
         :return: self
         """
-        if hasattr(self, key):
-            delattr(self, key)
+        if self.metadata and key in self.metadata:
+            del self.metadata[key]
+            self.validate(self.metadata)  # Revalidate the metadata
+
+            # Check if a setter method exists for this attribute
+            method_name = f"set_{key.lower()}"
+            if hasattr(self, method_name):
+                # If so, delete the setter method
+                delattr(self.__class__, method_name)
+
         return self
 
-    @abstractmethod
-    def load_schema(self, **kwargs) -> None:
-        """Load the schema for this component. Must be implemented by subclasses."""
-        pass
+    def _load_schema(self, schema: dict) -> None:
+        """
+        Load the schema for this component.
 
-    @abstractmethod
-    def validate(self, **kwargs) -> None:
+        :param schema: A dictionary representing the JSON schema.
+        :raises ValueError: If the schema is not a valid dictionary.
+    """
+        if not isinstance(schema, dict):
+            raise ValueError("Schema must be a dictionary.")
+        self.schema = schema
+        self._create_methods_from_schema(schema)  # Automatically create methods from the schema
+
+    def validate(self, instance: dict) -> None:
         """
-        Abstract method to validate the metadata.
-        Subclasses must implement this method.
+        Validate the metadata against the loaded schema.
+
+        :param instance: A dictionary representing the metadata to be validated.
+        :raises jsonschema.exceptions.ValidationError: If the instance does not conform to the schema.
+        :raises RuntimeError: If the schema has not been loaded.
         """
-        pass
+        if self.schema is None:
+            raise RuntimeError("Schema has not been loaded. Call load_schema() first with a JSON schema.")
+        validate(instance, self.schema)
 
 
 class Component:
@@ -66,17 +135,36 @@ class Component:
 
     def __init__(self, specification: SubComponent, implementation: Optional[SubComponent] = None,
                  infrastructure: Optional[SubComponent] = None):
-        if not isinstance(specification, SubComponent):
-            raise ValueError("specification must be an instance of SubComponent class.")
-        if implementation is not None and not isinstance(implementation, SubComponent):
-            raise ValueError("implementation must be an instance of SubComponent class or None.")
-        if infrastructure is not None and not isinstance(infrastructure, SubComponent):
-            raise ValueError("infrastructure must be an instance of SubComponent class or None.")
+        try:
+            self.specification = self._validate_subcomponent(specification, "specification")
+            self.implementation = self._validate_subcomponent(implementation, "implementation")
+            self.infrastructure = self._validate_subcomponent(infrastructure, "infrastructure")
+            self.configuration: Optional[Dict[str, Any]] = None
 
-        self.specification = specification
-        self.implementation = implementation
-        self.infrastructure = infrastructure
-        self.configuration: Optional[Dict[str, Any]] = None
+            logger.info("Component initialized successfully.")
+        except ValueError as e:
+            logger.error(f"Error initializing Component: {str(e)}")
+            raise
+
+    @staticmethod
+    def _validate_subcomponent(subcomponent: Optional[SubComponent], name: str) -> Optional[SubComponent]:
+        """
+        Validate a subcomponent against its schema.
+
+        :param subcomponent: The subcomponent to validate.
+        :param name: The name of the subcomponent (for error messages).
+        :return: The validated subcomponent, or None if it was None.
+        :raises ValueError: If the subcomponent is not an instance of SubComponent class.
+        :raises jsonschema.exceptions.ValidationError: If the subcomponent does not conform to its schema.
+        """
+        if subcomponent is None:
+            return None
+
+        if not isinstance(subcomponent, SubComponent):
+            raise ValueError(f"{name} must be an instance of SubComponent class or None.")
+
+        subcomponent.validate(subcomponent.metadata)  # Validate the metadata against the schema
+        return subcomponent
 
     def configuration(self) -> Dict[str, Any]:
         """
@@ -85,13 +173,18 @@ class Component:
 
         :return: A dictionary containing the combined configuration of the component.
         """
-        # Assign the metadata to the configuration
-        self.configuration = {'metadata': self.specification.metadata}
+        try:
+            # Assign the metadata to the configuration
+            self.configuration = {'specification': self.specification.metadata}
 
-        # Assign implementation and infrastructure if they exist
-        for attr_name in ['implementation', 'infrastructure']:
-            attr = getattr(self, attr_name, None)
-            if attr:
-                self.configuration[attr_name] = attr.metadata
+            # Assign implementation and infrastructure if they exist
+            for attr_name in ['implementation', 'infrastructure']:
+                attr = getattr(self, attr_name, None)
+                if attr:
+                    self.configuration[attr_name] = attr.metadata
 
-        return self.configuration
+            logger.info("Configuration generated successfully.")
+            return self.configuration
+        except Exception as err:
+            logger.error(f"Error generating configuration: {str(err)}")
+            raise

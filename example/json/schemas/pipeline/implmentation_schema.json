@@ -3,6 +3,10 @@
   "title": "Component Implementation Schema",
   "type": "object",
   "properties": {
+    "type": {
+      "type": "string",
+      "enum": ["Specification", "Implementation", "Infrastructure"]
+    },
     "Implementation": {
       "type": "object",
       "properties": {
@@ -41,6 +45,7 @@
     }
   },
   "required": [
+    "type",
     "Implementation"
   ]
 }

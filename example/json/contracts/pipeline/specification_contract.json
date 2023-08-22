@@ -1,6 +1,5 @@
 {
-  "Component": {
-    "Type": "MetaDataContract",
+  "Specification": {
     "GeneralInformation": {
       "Name": "SampleComponent",
       "Version": "1.0",
