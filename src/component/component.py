@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 """
@@ -21,8 +20,13 @@ class SubComponent(ABC):
     Abstract base class for handling subcomponents.
     This class can be extended to handle specific logic for different types of components.
     """
+    ALLOWED_TYPES = ["Specification", "Implementation", "Infrastructure"]
 
-    def __init__(self, schema):
+    def __init__(self, schema, type):
+        self.schema = None
+        if type not in self.ALLOWED_TYPES:
+            raise ValueError(f"Invalid type: {type}. Must be one of {self.ALLOWED_TYPES}.")
+        self.type = type
         self.metadata: Optional[Dict[str, Any]] = None  # Initialize as None; will be assigned after validation
         self._load_schema(schema=schema)
 
@@ -126,9 +130,9 @@ class SubComponent(ABC):
 
 class Component:
     """
-    Represents a complete component, consisting of metadata, implementation, and infrastructure.
+    Represents a complete component, consisting of specification, implementation, and infrastructure.
 
-    :param specification: SubComponent object representing the metadata contract.
+    :param specification: SubComponent object representing the specification contract.
     :param implementation: SubComponent object representing the implementation (optional).
     :param infrastructure: SubComponent object representing the infrastructure (optional).
     """
@@ -136,9 +140,9 @@ class Component:
     def __init__(self, specification: SubComponent, implementation: Optional[SubComponent] = None,
                  infrastructure: Optional[SubComponent] = None):
         try:
-            self.specification = self._validate_subcomponent(specification, "specification")
-            self.implementation = self._validate_subcomponent(implementation, "implementation")
-            self.infrastructure = self._validate_subcomponent(infrastructure, "infrastructure")
+            self.specification = self._validate_subcomponent(specification)
+            self.implementation = self._validate_subcomponent(implementation)
+            self.infrastructure = self._validate_subcomponent(infrastructure)
             self.configuration: Optional[Dict[str, Any]] = None
 
             logger.info("Component initialized successfully.")
@@ -147,7 +151,7 @@ class Component:
             raise
 
     @staticmethod
-    def _validate_subcomponent(subcomponent: Optional[SubComponent], name: str) -> Optional[SubComponent]:
+    def _validate_subcomponent(subcomponent: Optional[SubComponent]) -> Optional[SubComponent]:
         """
         Validate a subcomponent against its schema.
 
@@ -159,14 +163,14 @@ class Component:
         """
         if subcomponent is None:
             return None
-
         if not isinstance(subcomponent, SubComponent):
-            raise ValueError(f"{name} must be an instance of SubComponent class or None.")
-
+            raise ValueError(f"Subcomponent must be an instance of SubComponent class or None.")
+        if subcomponent.type not in SubComponent.ALLOWED_TYPES:
+            raise ValueError(f"Invalid type: {subcomponent.type}. Must be one of {SubComponent.ALLOWED_TYPES}.")
         subcomponent.validate(subcomponent.metadata)  # Validate the metadata against the schema
         return subcomponent
 
-    def configuration(self) -> Dict[str, Any]:
+    def configure(self) -> Dict[str, Any]:
         """
         Bind all the components on its constituent parts to have the total configuration of the component.
         Only the specification contract is required, implementation and infrastructure are optional.
