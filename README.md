@@ -1,51 +1,32 @@
 # The Digital Twin for an Organisation
 
-This repository contains code for generating configuration objects to create digital twins via a component structure. 
-It includes a core ComponentSDK and specialized structures for PipelineSDK, MicroserviceSDK, and ThirdPartySDK, which 
-can be utilized as helper SDKs for developers.
+This repository contains code for generating configuration objects to create digital twins via a component structure. It includes a core ComponentSDK, which serves as the foundational building block for defining and validating components within the digital twin framework.
 
 ## ComponentSDK
 
-The ComponentSDK serves as the foundational building block for defining and validating components within the digital 
-twin framework. It includes abstract classes for metadata contracts, implementation, and infrastructure, along with 
-validation against JSON schemas. This validation process ensures that the metadata, implementation, and infrastructure 
-of a component adhere to the specified schema, providing robust error handling and consistency across components.
+The ComponentSDK provides abstract classes for defining and validating components, such as specification, implementation, and infrastructure. These components are validated against JSON schemas, ensuring that they adhere to the specified structure and constraints.
 
 ### Featured Classes:
 
-- **MetaDataContract**: Defines the contract for metadata, including ports, data contracts, and other attributes.
-- **Implementation**: Contains the logic specific to the implementation of a component.
-- **Infrastructure**: Describes the infrastructure requirements and configurations for a component.
+- **SubComponent**: An abstract base class for handling subcomponents. It can be extended to handle specific logic for different types of components, such as specification, implementation, and infrastructure. It includes methods for dynamically creating setter methods based on a JSON schema, adding and removing attributes, and validating metadata against the schema.
 
-## PipelineSDK
+- **Component**: Represents a complete component, consisting of one or more SubComponents. It includes methods for validating subcomponents and generating a combined configuration.
 
-The PipelineSDK extends the ComponentSDK to model data pipelines, providing specific classes and methods for:
+### JSON Schemas
 
-- **ETL Configuration**: Define ETL processes using a fluent API.
-- **Resource Allocation**: Specify CPU, RAM, and other resource requirements.
-- **Job Scheduling**: Schedule jobs for batch or streaming execution.
+The JSON schemas define the structure and validation rules for each subcomponent. They are used to dynamically create setter methods and validate the metadata of the subcomponents. Example schemas are provided in the `example/simple/pipeline/schemas` directory.
 
-## MicroserviceSDK
+## Example Usage
 
-The MicroserviceSDK, an extension of the ComponentSDK, allows for the definition and configuration of microservices, 
-including:
-
-- **Endpoint Configuration**: Define HTTP methods, paths, and parameters.
-- **Request/Response Contracts**: Specify contracts for each endpoint.
-- **Deployment Configuration**: Define settings such as scaling, replicas, and environment variables.
-
-## ThirdPartySDK
-
-The ThirdPartySDK extends the ComponentSDK to model third-party components, offering classes and methods for:
-
-- **API Integration**: Define authentication, endpoints, and request/response formats.
-- **Library Configuration**: Specify dependencies and configurations.
-- **External Services**: Configure connections to databases, message brokers, and cloud providers.
+The `example` directory contains examples of how to define and configure components using the ComponentSDK. This includes examples for both setter-based configuration (`example_pipeline_setter.py`) and JSON-based configuration (`pipeline_example_JSON.py`).
 
 ## Getting Started
 
-Refer to the individual SDK documentation and example code for detailed instructions on defining and configuring
-components, pipelines, microservices, and third-party integrations.
+Refer to the example code and individual class documentation for detailed instructions on defining and configuring components using the ComponentSDK.
+
+## Tests
+
+The `tests` directory contains test cases for the Component and SubComponent classes. Run the tests to verify the functionality of the core classes.
 
 ## Contributing
 
