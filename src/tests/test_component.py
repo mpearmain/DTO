@@ -1,5 +1,6 @@
 import unittest
 from src.DTOComponent import SubComponent, Component
+from jsonschema.exceptions import ValidationError
 
 
 class TestSubComponent(unittest.TestCase):
@@ -90,8 +91,8 @@ class TestSubComponent(unittest.TestCase):
             }
         }
         subcomponent = SubComponent(schema=schema, type="Specification")
-        with self.assertRaises(Exception):  # Should raise an exception due to missing required field
-            subcomponent.validate({})
+        with self.assertRaises(ValidationError):  # Should raise a ValidationError due to missing required field
+            subcomponent.validate({"specification": {}})  # Missing "name" inside "specification"
 
     def test_load_schema_invalid(self):
         """Test loading an invalid schema."""
