@@ -1,4 +1,5 @@
 {
+  "Type": "Infrastructure",
   "Infrastructure": {
     "Version": "1.0.0",
     "Compute": {

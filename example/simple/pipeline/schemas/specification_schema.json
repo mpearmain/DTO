@@ -3,6 +3,10 @@
   "title": "Pipeline Specification Schema",
   "type": "object",
   "properties": {
+    "Type": {
+      "type": "string",
+      "enum": ["Specification", "Implementation", "Infrastructure"]
+    },
     "Specification": {
       "type": "object",
       "properties": {
@@ -192,5 +196,5 @@
       "required": ["GeneralInformation", "Dependencies", "Interfaces"]
     }
   },
-  "required": ["Specification"]
+  "required": ["Type","Specification"]
 }

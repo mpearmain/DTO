@@ -3,6 +3,10 @@
   "title": "Pipeline Infrastructure Schema",
   "type": "object",
   "properties": {
+    "Type": {
+      "type": "string",
+      "enum": ["Specification", "Implementation", "Infrastructure"]
+    },
     "Infrastructure": {
       "type": "object",
       "properties": {
@@ -67,5 +71,5 @@
       "required": ["Version", "Compute", "Orchestration", "Storage", "Persistence", "Identity", "Environment", "Monitoring"]
     }
   },
-  "required": ["Infrastructure"]
+  "required": ["Type","Infrastructure"]
 }

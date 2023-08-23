@@ -15,9 +15,8 @@ assigned to them.
 The validation ensures that the metadata for each subcomponent adheres to the structure and constraints defined in the
 corresponding JSON schema.
 """
-
 import json
-from src.DTOComponent import Component, SubComponent
+from DTOComponent import Component, SubComponent  # Adjust the import path as needed
 
 
 def load_json(file_path):
@@ -36,18 +35,19 @@ specification_metadata = load_json('./pipeline_config/specification_config.json'
 implementation_metadata = load_json('./pipeline_config/implementation_config.json')
 infrastructure_metadata = load_json('./pipeline_config/infrastructure_config.json')
 
-# Create SubComponent instances and set metadata directly
-specification = SubComponent(schema=specification_schema, type="Specification")
-specification.metadata = specification_metadata
+# Create SubComponent instances
+specification = SubComponent(schema=specification_schema)
+implementation = SubComponent(schema=implementation_schema)
+infrastructure = SubComponent(schema=infrastructure_schema)
 
-implementation = SubComponent(schema=implementation_schema, type="Implementation")
-implementation.metadata = implementation_metadata
-
-infrastructure = SubComponent(schema=infrastructure_schema, type="Infrastructure")
-infrastructure.metadata = infrastructure_metadata
+# Load instances from metadata
+specification.load_instance(specification_metadata)
+implementation.load_instance(implementation_metadata)
+infrastructure.load_instance(infrastructure_metadata)
 
 # Create a Component instance
 pipeline = Component(specification=specification, implementation=implementation, infrastructure=infrastructure)
 
 # Get the combined configuration
-pipeline.configure()
+configuration = pipeline.configure()
+print(configuration)  # Print or use the combined configuration as needed

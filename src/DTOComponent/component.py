@@ -1,131 +1,81 @@
+"""
+This module provides classes for defining and manipulating components in a digital twin system.
+It consists of two main classes: SubComponent and Component.
+
+- SubComponent: An abstract base class that represents a part of a component, such as a specification,
+  implementation, or infrastructure. It provides methods for loading and manipulating instances
+  based on a given JSON schema.
+
+- Component: A class that represents a complete component, consisting of one or more SubComponents.
+  It provides methods for configuring and validating the component based on its constituent parts.
+
+Example usage:
+
+    specification_schema = {...}  # JSON schema for the specification
+    implementation_schema = {...}  # JSON schema for the implementation
+
+    specification = SubComponent(specification_schema)
+    implementation = SubComponent(implementation_schema)
+
+    specification.load_instance({...})  # JSON data for the specification
+    implementation.load_instance({...})  # JSON data for the implementation
+
+    component = Component(specification, implementation)
+    configuration = component.configure()
+"""
+
 import logging
-from jsonschema import validate
+import warlock
 from abc import ABC
 from typing import Any, Dict, Optional
 
 # Configure logging
 logger = logging.getLogger(__name__)
 
-"""
-This module defines two core classes, SubComponent and Component, that serve as the foundation classes for building
-complex components in a digital twin system. 
-SubComponent is an abstract base class that can be extended to handle specific logic for different types of components,
-such as specification, implementation, and infrastructure. 
-Component represents a complete DTOComponent, consisting of one or more SubComponents.
-"""
-
 
 class SubComponent(ABC):
     """
-    Abstract base class for handling subcomponents.
-    This class can be extended to handle specific logic for different types of components.
+    Abstract base class for a subcomponent, such as a specification, implementation, or infrastructure.
+
+    :param schema: The JSON schema defining the structure of the subcomponent.
     """
-    ALLOWED_TYPES = ["Specification", "Implementation", "Infrastructure"]
 
-    def __init__(self, schema, type):
-        self.schema = None
-        if type not in self.ALLOWED_TYPES:
-            raise ValueError(f"Invalid type: {type}. Must be one of {self.ALLOWED_TYPES}.")
-        self.type = type
-        self.metadata: Optional[Dict[str, Any]] = None  # Initialize as None; will be assigned after validation
-        self._load_schema(schema=schema)
+    def __init__(self, schema: Dict[str, Any]):
+        self.type = schema.get("properties", {}).get("Type", {}).get("enum")
+        if self.type is None:
+            raise ValueError("Schema must contain an enum of allowed types under properties > Type.")
+        self.model_factory = warlock.model_factory(schema)
+        self.instance = None  # Placeholder for the instance created from the schema
 
-    @classmethod
-    def _create_methods_from_schema(cls, schema: dict) -> None:
+    def load_instance(self, json_data: Dict[str, Any]) -> None:
         """
-        Dynamically creates setter methods for the class based on the provided JSON schema.
+        Load an instance from JSON data and validate it against the schema.
 
-        This method iterates through the properties defined in the schema and creates a setter method for each property.
-        The setter method will be named "set_<property_name>" and will call the add_attr method to add the attribute to
-        the metadata.
-
-        :param schema: A dictionary representing the JSON schema.
+        :param json_data: A dictionary representing the JSON data.
         """
+        self.instance = self.model_factory(json_data)
 
-        # Extract the properties from the schema. The schema is expected to have a specific structure where the
-        # properties are nested inside an object, so we access the first value of the "properties" dictionary.
-        properties = list(schema["properties"].values())[0]["properties"]
-
-        # Iterate through the properties, creating a setter method for each one.
-        for name, details in properties.items():
-            # Define the setter method. It takes two parameters: self and value.
-            # The name parameter is captured from the outer scope and used to call add_attr with the correct key.
-            def setter(self, value, name=name):
-                return self.add_attr(name, value)  # Call add_attr internally to add the attribute to the metadata
-
-            # Create the method name by converting the property name to lowercase and prefixing it with "set_".
-            method_name = f"set_{name.lower()}"
-
-            # Use setattr to add the setter method to the class. This makes the method available on all instances of the
-            # class.
-            setattr(cls, method_name, setter)
-
-    def add_attr(self, key: str, value: Any) -> 'SubComponent':
+    def get_attribute(self, attr_name: str) -> Any:
         """
-        Adds an attribute to the metadata and creates a corresponding setter method if it doesn't exist.
+        Get an attribute from the loaded instance.
 
-        :param key: Attribute name.
-        :param value: Attribute value.
-        :return: self
+        :param attr_name: The name of the attribute to retrieve.
+        :return: The value of the attribute.
         """
-        if self.metadata is None:
-            self.metadata = {}
-        self.metadata[key] = value
-        self.validate(self.metadata)  # Revalidate the metadata
+        if self.instance is None:
+            raise RuntimeError("Instance has not been loaded. Call load_instance() first.")
+        return getattr(self.instance, attr_name)
 
-        # Check if a setter method already exists for this attribute
-        method_name = f"set_{key.lower()}"
-        if not hasattr(self, method_name):
-            # If not, create the setter method
-            def setter(self, value, key=key):
-                return self.add_attr(key, value)  # Call add_attr internally
-
-            setattr(self.__class__, method_name, setter)
-
-        return self
-
-    def remove_attr(self, key: str) -> 'SubComponent':
+    def set_attribute(self, attr_name: str, value: Any) -> None:
         """
-        Removes an attribute from the metadata and deletes the corresponding setter method if it exists.
+        Set an attribute in the loaded instance.
 
-        :param key: Attribute name to be removed.
-        :return: self
+        :param attr_name: The name of the attribute to set.
+        :param value: The value to set.
         """
-        if self.metadata and key in self.metadata:
-            del self.metadata[key]
-            self.validate(self.metadata)  # Revalidate the metadata
-
-            # Check if a setter method exists for this attribute
-            method_name = f"set_{key.lower()}"
-            if hasattr(self, method_name):
-                # If so, delete the setter method
-                delattr(self.__class__, method_name)
-
-        return self
-
-    def _load_schema(self, schema: dict) -> None:
-        """
-        Load the schema for this DTOComponent.
-
-        :param schema: A dictionary representing the JSON schema.
-        :raises ValueError: If the schema is not a valid dictionary.
-    """
-        if not isinstance(schema, dict):
-            raise ValueError("Schema must be a dictionary.")
-        self.schema = schema
-        self._create_methods_from_schema(schema)  # Automatically create methods from the schema
-
-    def validate(self, instance: dict) -> None:
-        """
-        Validate the metadata against the loaded schema.
-
-        :param instance: A dictionary representing the metadata to be validated.
-        :raises jsonschema.exceptions.ValidationError: If the instance does not conform to the schema.
-        :raises RuntimeError: If the schema has not been loaded.
-        """
-        if self.schema is None:
-            raise RuntimeError("Schema has not been loaded. Call load_schema() first with a JSON schema.")
-        validate(instance, self.schema)
+        if self.instance is None:
+            raise RuntimeError("Instance has not been loaded. Call load_instance() first.")
+        setattr(self.instance, attr_name, value)
 
 
 class Component:
@@ -139,35 +89,25 @@ class Component:
 
     def __init__(self, specification: SubComponent, implementation: Optional[SubComponent] = None,
                  infrastructure: Optional[SubComponent] = None):
-        try:
-            self.specification = self._validate_subcomponent(specification)
-            self.implementation = self._validate_subcomponent(implementation)
-            self.infrastructure = self._validate_subcomponent(infrastructure)
-            self.configuration: Optional[Dict[str, Any]] = None
-
-            logger.info("Component initialized successfully.")
-        except ValueError as e:
-            logger.error(f"Error initializing Component: {str(e)}")
-            raise
+        self.specification = self._validate_subcomponent(specification)
+        self.implementation = self._validate_subcomponent(implementation)
+        self.infrastructure = self._validate_subcomponent(infrastructure)
+        self.configuration: Optional[Dict[str, Any]] = None
+        logger.info("Component initialized successfully.")
 
     @staticmethod
     def _validate_subcomponent(subcomponent: Optional[SubComponent]) -> Optional[SubComponent]:
         """
-        Validate a subcomponent against its schema.
+        Validate a subcomponent.
 
         :param subcomponent: The subcomponent to validate.
-        :param name: The name of the subcomponent (for error messages).
         :return: The validated subcomponent, or None if it was None.
         :raises ValueError: If the subcomponent is not an instance of SubComponent class.
-        :raises jsonschema.exceptions.ValidationError: If the subcomponent does not conform to its schema.
         """
         if subcomponent is None:
             return None
         if not isinstance(subcomponent, SubComponent):
             raise ValueError(f"Subcomponent must be an instance of SubComponent class or None.")
-        if subcomponent.type not in SubComponent.ALLOWED_TYPES:
-            raise ValueError(f"Invalid type: {subcomponent.type}. Must be one of {SubComponent.ALLOWED_TYPES}.")
-        subcomponent.validate(subcomponent.metadata)  # Validate the metadata against the schema
         return subcomponent
 
     def configure(self) -> Dict[str, Any]:
@@ -179,13 +119,13 @@ class Component:
         """
         try:
             # Assign the metadata to the configuration
-            self.configuration = {'specification': self.specification.metadata}
+            self.configuration = {'specification': self.specification.instance}
 
             # Assign implementation and infrastructure if they exist
             for attr_name in ['implementation', 'infrastructure']:
                 attr = getattr(self, attr_name, None)
                 if attr:
-                    self.configuration[attr_name] = attr.metadata
+                    self.configuration[attr_name] = attr.instance
 
             logger.info("Configuration generated successfully.")
             return self.configuration

@@ -9,6 +9,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.8"
 jsonschema = "^4.19.0"
+warlock = "^2.0.1"
 
 
 [tool.poetry.group.dev.dependencies]

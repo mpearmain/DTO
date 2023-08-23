@@ -1,4 +1,5 @@
 {
+  "Type": "Implementation",
   "Implementation": {
     "Version": "1.0.0",
     "Engine": "Spark",

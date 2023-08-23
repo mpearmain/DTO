@@ -12,9 +12,8 @@ using dynamically created setter methods.
 The validation ensures that the attributes for each subcomponent adhere to the structure and constraints defined in the
 corresponding JSON schema.
 """
-
-import json
 from src.DTOComponent import Component, SubComponent
+import json
 
 
 def load_json(file_path):
@@ -28,32 +27,52 @@ specification_schema = load_json('./schemas/specification_schema.json')
 implementation_schema = load_json('./schemas/implementation_schema.json')
 infrastructure_schema = load_json('./schemas/infrastructure_schema.json')
 
-# Create an instance of SubComponent for Specification, passing the schema to the constructor
-specification = SubComponent(schema=specification_schema, type="Specification")
-specification \
-    .set_name("SampleComponent") \
-    .set_version("1.0") \
-    .set_description("A sample DTOComponent for demonstration") \
-    # ... other setter methods ...
+# Create an instance of SubComponent for Specification
+specification = SubComponent(schema=specification_schema)
+specification.set_attribute("Type", "Specification")
+specification.set_attribute("GeneralInformation", {
+    "Name": "SampleComponent",
+    "Version": "1.0",
+    "Description": "A sample component for demonstration",
+    # ... other attributes ...
+})
+specification.set_attribute("Dependencies", [
+    {"DependencyName": "Database", "DependencyType": "internal", "DependencyDetails": "MySQL Database"}
+])
+# ... other attributes ...
 
-# Create an instance of SubComponent for Implementation, passing the schema to the constructor
-implementation = SubComponent(schema=implementation_schema, type="Implementation")
-implementation \
-    .set_version("1.0.0") \
-    .set_engine("Spark") \
-    .set_resources({"CPU": 8, "RAM": "48Gi"}) \
-    .set_execution({"JobType": "batch", "ScheduleExecution": "00:00:00", "Interval": "6hrs"}) \
-    .set_query("SELECT foo, bar, baz FROM foobar f JOIN baz b ON f.id=b.id WHERE foo.blah > baz.")
+# Create an instance of SubComponent for Implementation
+implementation = SubComponent(schema=implementation_schema)
+implementation.set_attribute("Type", "Implementation")
+implementation.set_attribute("Version", "1.0.0")
+implementation.set_attribute("Engine", "Spark")
+implementation.set_attribute("Resources", {"CPU": 8, "RAM": "48Gi", "GPU": "None"})
+implementation.set_attribute("Execution", {"JobType": "batch",
+                                           "ScheduleExecution": "00:00:00",
+                                           "Interval": "6hrs"})
+implementation.set_attribute("Query",
+                             "SELECT foo, bar, baz FROM foobar f JOIN baz b ON f.id=b.id WHERE foo.blah > baz.")
 
-# Create an instance of SubComponent for Infrastructure, passing the schema to the constructor
-infrastructure = SubComponent(schema=infrastructure_schema, type="Infrastructure")
-infrastructure \
-    .set_version("1.0.0") \
-    .set_compute("shared", {"resourceRequirements": "High", "availabilityZone": "us-west-2"}) \
-    # ... other setter methods ...
+# Create an instance of SubComponent for Infrastructure
+infrastructure = SubComponent(schema=infrastructure_schema)
+infrastructure.set_attribute("Type", "Infrastructure")
+infrastructure.set_attribute("Version", "1.0.0")
+infrastructure.set_attribute("Compute", {"Type": "shared",
+                                         "Configuration": {"resourceRequirements": "High",
+                                                           "availabilityZone": "us-west-2"
+                                                           }
+                                         })
+infrastructure.set_attribute("Orchestration", {"Type": "Kubernetes",
+                                               "Configuration": {"clusterSize": 5,
+                                                                 "namespace": "production"
+                                                                 }
+                                               })
+# ... other attributes ...
+
 
 # Create a Component instance using the previously defined SubComponents
 pipeline = Component(specification=specification, implementation=implementation, infrastructure=infrastructure)
 
 # Get the combined configuration of the DTOComponent
-pipeline.configure()
+configuration = pipeline.configure()
+print(configuration)  # Print or use the combined configuration as needed
