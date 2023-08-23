@@ -1,10 +1,7 @@
 # The Digital Twin for an Organisation
 
-This repository contains code for generating configuration objects to create digital twins via a component structure. It includes a core ComponentSDK, which serves as the foundational building block for defining and validating components within the digital twin framework.
-
-## ComponentSDK
-
-The ComponentSDK provides abstract classes for defining and validating components, such as specification, implementation, and infrastructure. These components are validated against JSON schemas, ensuring that they adhere to the specified structure and constraints.
+This repository contains code for generating configuration objects to create digital twins via a component structure. It includes a core Component, which serves as the foundational building block for defining and validating components within the digital twin framework.
+The Component provides abstract classes for defining and validating components, such as specification, implementation, and infrastructure. These components are validated against JSON schemas, ensuring that they adhere to the specified structure and constraints.
 
 ### Featured Classes:
 
@@ -18,11 +15,11 @@ The JSON schemas define the structure and validation rules for each subcomponent
 
 ## Example Usage
 
-The `example` directory contains examples of how to define and configure components using the ComponentSDK. This includes examples for both setter-based configuration (`example_pipeline_setter.py`) and JSON-based configuration (`pipeline_example_JSON.py`).
+The `example` directory contains examples of how to define and configure components using the Component. This includes examples for both setter-based configuration (`example_pipeline_setter.py`) and JSON-based configuration (`pipeline_example_JSON.py`).
 
 ## Getting Started
 
-Refer to the example code and individual class documentation for detailed instructions on defining and configuring components using the ComponentSDK.
+Refer to the example code and individual class documentation for detailed instructions on defining and configuring components using the Component.
 
 ## Tests
 

@@ -1,5 +1,5 @@
 import unittest
-from src.component import SubComponent, Component
+from src.DTOComponent import SubComponent, Component
 
 
 class TestSubComponent(unittest.TestCase):

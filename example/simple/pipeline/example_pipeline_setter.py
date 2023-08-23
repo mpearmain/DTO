@@ -7,14 +7,14 @@ and infrastructure using the SubComponent class. The process involves the follow
 using dynamically created setter methods.
 3. The attributes are automatically validated against the corresponding JSON schema when set using the setter methods.
 4. A Component instance is created using the SubComponent instances.
-5. The combined configuration of the component is retrieved.
+5. The combined configuration of the DTOComponent is retrieved.
 
 The validation ensures that the attributes for each subcomponent adhere to the structure and constraints defined in the
 corresponding JSON schema.
 """
 
 import json
-from src.component import Component, SubComponent
+from src.DTOComponent import Component, SubComponent
 
 
 def load_json(file_path):
@@ -33,7 +33,7 @@ specification = SubComponent(schema=specification_schema, type="Specification")
 specification \
     .set_name("SampleComponent") \
     .set_version("1.0") \
-    .set_description("A sample component for demonstration") \
+    .set_description("A sample DTOComponent for demonstration") \
     # ... other setter methods ...
 
 # Create an instance of SubComponent for Implementation, passing the schema to the constructor
@@ -55,5 +55,5 @@ infrastructure \
 # Create a Component instance using the previously defined SubComponents
 pipeline = Component(specification=specification, implementation=implementation, infrastructure=infrastructure)
 
-# Get the combined configuration of the component
+# Get the combined configuration of the DTOComponent
 pipeline.configure()

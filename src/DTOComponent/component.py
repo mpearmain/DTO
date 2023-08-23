@@ -1,6 +1,6 @@
 import logging
 from jsonschema import validate
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Any, Dict, Optional
 
 # Configure logging
@@ -11,7 +11,7 @@ This module defines two core classes, SubComponent and Component, that serve as 
 complex components in a digital twin system. 
 SubComponent is an abstract base class that can be extended to handle specific logic for different types of components,
 such as specification, implementation, and infrastructure. 
-Component represents a complete component, consisting of one or more SubComponents.
+Component represents a complete DTOComponent, consisting of one or more SubComponents.
 """
 
 
@@ -105,7 +105,7 @@ class SubComponent(ABC):
 
     def _load_schema(self, schema: dict) -> None:
         """
-        Load the schema for this component.
+        Load the schema for this DTOComponent.
 
         :param schema: A dictionary representing the JSON schema.
         :raises ValueError: If the schema is not a valid dictionary.
@@ -130,7 +130,7 @@ class SubComponent(ABC):
 
 class Component:
     """
-    Represents a complete component, consisting of specification, implementation, and infrastructure.
+    Represents a complete DTOComponent, consisting of specification, implementation, and infrastructure.
 
     :param specification: SubComponent object representing the specification contract.
     :param implementation: SubComponent object representing the implementation (optional).
@@ -172,10 +172,10 @@ class Component:
 
     def configure(self) -> Dict[str, Any]:
         """
-        Bind all the components on its constituent parts to have the total configuration of the component.
+        Bind all the components on its constituent parts to have the total configuration of the DTOComponent.
         Only the specification contract is required, implementation and infrastructure are optional.
 
-        :return: A dictionary containing the combined configuration of the component.
+        :return: A dictionary containing the combined configuration of the DTOComponent.
         """
         try:
             # Assign the metadata to the configuration
