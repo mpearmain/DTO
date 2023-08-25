@@ -50,26 +50,30 @@ class ComponentParser:
 
         # If there's a parent node, create a relationship
         if parent_node:
-            self._create_relationship(parent_node, node)
+            self._create_relationship(parent_node, node, "HAS")
 
         # Recursively process nested dictionaries
         for key, value in data.items():
             if key == "SchemaType":  # Skip SchemaType since we've already processed it
                 continue
             if isinstance(value, dict):
-                self.parse(value, node, key)
+                child_node = self._create_node(value, key)
+                self._create_relationship(node, child_node, key)
+                self.parse(value, child_node, key)
             elif isinstance(value, list):
                 for item in value:
                     if isinstance(item, dict):
-                        self.parse({key: item}, node, key)
+                        child_node = self._create_node(item, key)
+                        self._create_relationship(node, child_node, key)
+                        self.parse(item, child_node, key)
 
     def _create_node(self, properties: Dict[str, Any], label: str) -> int:
         # Only add properties that are not dictionaries
-        props = {k: v for k, v in properties.items() if not isinstance(v, dict)}
+        props = {k: v for k, v in properties.items() if not isinstance(v, (dict, list))}
         result = self.tx.run("CREATE (n:" + label + " $props) RETURN id(n)", props=props)
         node_id = result.single()[0]
         return node_id
 
-    def _create_relationship(self, parent_node_id: int, child_node_id: int) -> None:
-        self.tx.run("MATCH (p), (n) WHERE id(p) = $parent_id AND id(n) = $child_id CREATE (p)-[:HAS]->(n)",
+    def _create_relationship(self, parent_node_id: int, child_node_id: int, rel_type: str) -> None:
+        self.tx.run(f"MATCH (p), (n) WHERE id(p) = $parent_id AND id(n) = $child_id CREATE (p)-[:{rel_type}]->(n)",
                     parent_id=parent_node_id, child_id=child_node_id)
