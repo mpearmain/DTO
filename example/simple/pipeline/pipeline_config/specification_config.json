@@ -1,6 +1,6 @@
 {
-  "Type": "Specification",
-  "Specification": {
+  "SubComponent": {
+    "SchemaType": "Specification",
     "GeneralInformation": {
       "Name": "SampleComponent",
       "Version": "1.0",

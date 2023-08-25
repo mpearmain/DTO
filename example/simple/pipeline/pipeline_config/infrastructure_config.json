@@ -1,6 +1,6 @@
 {
-  "Type": "Infrastructure",
-  "Infrastructure": {
+  "SubComponent": {
+    "SchemaType": "Infrastructure",
     "Version": "1.0.0",
     "Compute": {
       "Type": "shared",

@@ -1,6 +1,6 @@
 {
-  "Type": "Implementation",
-  "Implementation": {
+  "SubComponent": {
+    "SchemaType": "Implementation",
     "Version": "1.0.0",
     "Engine": "Spark",
     "Resources": {

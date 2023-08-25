@@ -3,57 +3,108 @@
   "title": "Pipeline Specification Schema",
   "type": "object",
   "properties": {
-    "Type": {
-      "type": "string",
-      "enum": ["Specification", "Implementation", "Infrastructure"]
-    },
-    "Specification": {
+    "SubComponent": {
       "type": "object",
       "properties": {
+        "SchemaType": {
+          "type": "string",
+          "enum": ["Specification", "Implementation", "Infrastructure"]
+        },
         "GeneralInformation": {
           "type": "object",
           "properties": {
-            "Name": { "type": "string" },
-            "Version": { "type": "string" },
-            "Description": { "type": "string" },
+            "Name": {
+              "type": "string"
+            },
+            "Version": {
+              "type": "string"
+            },
+            "Description": {
+              "type": "string"
+            },
             "Tags": {
               "type": "array",
-              "items": { "type": "string" }
+              "items": {
+                "type": "string"
+              }
             },
-            "Owner": { "type": "string" },
+            "Owner": {
+              "type": "string"
+            },
             "Contact": {
               "type": "object",
               "properties": {
-                "Name": { "type": "string" },
-                "Email": { "type": "string", "format": "email" }
+                "Name": {
+                  "type": "string"
+                },
+                "Email": {
+                  "type": "string",
+                  "format": "email"
+                }
               },
-              "required": ["Name", "Email"]
+              "required": [
+                "Name",
+                "Email"
+              ]
             },
-            "SLA": { "type": "string" },
-            "IncidenceResponseTime": { "type": "string" },
-            "CodingStyleGuide": { "type": "string" },
-            "VCSLocation": { "type": "string", "format": "uri" },
-            "AccessRequestContact": { "type": "string" },
-            "ResiliencyAndRecovery": { "type": "string" },
-            "PerformanceMetrics": { "type": "string" },
-            "ScalabilityInformation": { "type": "string" },
-            "SecurityCompliance": { "type": "string" }
+            "SLA": {
+              "type": "string"
+            },
+            "IncidenceResponseTime": {
+              "type": "string"
+            },
+            "CodingStyleGuide": {
+              "type": "string"
+            },
+            "VCSLocation": {
+              "type": "string",
+              "format": "uri"
+            },
+            "AccessRequestContact": {
+              "type": "string"
+            },
+            "ResiliencyAndRecovery": {
+              "type": "string"
+            },
+            "PerformanceMetrics": {
+              "type": "string"
+            },
+            "ScalabilityInformation": {
+              "type": "string"
+            },
+            "SecurityCompliance": {
+              "type": "string"
+            }
           },
-          "required": ["Name", "Version", "Owner"]
+          "required": [
+            "Name",
+            "Version",
+            "Owner"
+          ]
         },
         "Dependencies": {
           "type": "array",
           "items": {
             "type": "object",
             "properties": {
-              "DependencyName": { "type": "string" },
+              "DependencyName": {
+                "type": "string"
+              },
               "DependencyType": {
                 "type": "string",
-                "enum": ["internal", "external"]
+                "enum": [
+                  "internal",
+                  "external"
+                ]
               },
-              "DependencyDetails": { "type": "string" }
+              "DependencyDetails": {
+                "type": "string"
+              }
             },
-            "required": ["DependencyName", "DependencyType"]
+            "required": [
+              "DependencyName",
+              "DependencyType"
+            ]
           }
         },
         "Interfaces": {
@@ -64,25 +115,39 @@
               "Port": {
                 "type": "object",
                 "properties": {
-                  "Name": { "type": "string" },
+                  "Name": {
+                    "type": "string"
+                  },
                   "Type": {
                     "type": "string",
-                    "enum": ["input", "output"]
+                    "enum": [
+                      "input",
+                      "output"
+                    ]
                   },
                   "Services": {
                     "type": "array",
-                    "items": { "type": "string" }
+                    "items": {
+                      "type": "string"
+                    }
                   }
                 },
-                "required": ["Name", "Type"]
+                "required": [
+                  "Name",
+                  "Type"
+                ]
               }
             },
-            "required": ["Port"]
+            "required": [
+              "Port"
+            ]
           }
         },
         "InternalResources": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
         "DataContract": {
           "type": "array",
@@ -92,22 +157,43 @@
               "Contract": {
                 "type": "object",
                 "properties": {
-                  "Name": { "type": "string" },
-                  "Description": { "type": "string" },
+                  "Name": {
+                    "type": "string"
+                  },
+                  "Description": {
+                    "type": "string"
+                  },
                   "Attributes": {
                     "type": "array",
                     "items": {
                       "type": "object",
                       "properties": {
-                        "Name": { "type": "string" },
+                        "Name": {
+                          "type": "string"
+                        },
                         "Type": {
                           "type": "string",
-                          "enum": ["int", "float", "string", "boolean", "date", "object"]
+                          "enum": [
+                            "int",
+                            "float",
+                            "string",
+                            "boolean",
+                            "date",
+                            "object"
+                          ]
                         },
-                        "Description": { "type": "string" },
-                        "Source": { "type": "string" },
-                        "Privacy": { "type": "string" },
-                        "BusinessCriticality": { "type": "string" },
+                        "Description": {
+                          "type": "string"
+                        },
+                        "Source": {
+                          "type": "string"
+                        },
+                        "Privacy": {
+                          "type": "string"
+                        },
+                        "BusinessCriticality": {
+                          "type": "string"
+                        },
                         "Transformation": {
                           "type": "object",
                           "properties": {
@@ -116,85 +202,146 @@
                               "items": {
                                 "type": "object",
                                 "properties": {
-                                  "Description": { "type": "string" },
+                                  "Description": {
+                                    "type": "string"
+                                  },
                                   "Dependencies": {
                                     "type": "array",
                                     "items": {
                                       "type": "object",
                                       "properties": {
-                                        "Name": { "type": "string" },
-                                        "Type": { "type": "string" },
-                                        "Details": { "type": "string" }
+                                        "Name": {
+                                          "type": "string"
+                                        },
+                                        "Type": {
+                                          "type": "string"
+                                        },
+                                        "Details": {
+                                          "type": "string"
+                                        }
                                       },
-                                      "required": ["Name", "Type"]
+                                      "required": [
+                                        "Name",
+                                        "Type"
+                                      ]
                                     }
                                   }
                                 },
-                                "required": ["Description"]
+                                "required": [
+                                  "Description"
+                                ]
                               }
                             }
                           },
-                          "required": ["Steps"]
+                          "required": [
+                            "Steps"
+                          ]
                         }
                       },
-                      "required": ["Name", "Type"]
+                      "required": [
+                        "Name",
+                        "Type"
+                      ]
                     }
                   },
                   "DataGovernance": {
                     "type": "object",
                     "properties": {
-                      "DataSteward": { "type": "string" },
-                      "DataQuality": { "type": "string" },
-                      "DataClassification": { "type": "string" },
-                      "DataRetention": { "type": "string" }
+                      "DataSteward": {
+                        "type": "string"
+                      },
+                      "DataQuality": {
+                        "type": "string"
+                      },
+                      "DataClassification": {
+                        "type": "string"
+                      },
+                      "DataRetention": {
+                        "type": "string"
+                      }
                     },
-                    "required": ["DataSteward"]
+                    "required": [
+                      "DataSteward"
+                    ]
                   },
                   "AccessControl": {
                     "type": "object",
                     "properties": {
-                      "AuthenticationService": { "type": "string" },
-                      "AuthorizationService": { "type": "string" },
+                      "AuthenticationService": {
+                        "type": "string"
+                      },
+                      "AuthorizationService": {
+                        "type": "string"
+                      },
                       "AccessPolicies": {
                         "type": "array",
-                        "items": { "type": "string" }
+                        "items": {
+                          "type": "string"
+                        }
                       }
                     },
-                    "required": ["AuthenticationService", "AuthorizationService"]
+                    "required": [
+                      "AuthenticationService",
+                      "AuthorizationService"
+                    ]
                   }
                 },
-                "required": ["Name", "Attributes"]
+                "required": [
+                  "Name",
+                  "Attributes"
+                ]
               }
             },
-            "required": ["Contract"]
+            "required": [
+              "Contract"
+            ]
           }
         },
         "AuditInformation": {
           "type": "object",
           "properties": {
-            "LastModified": { "type": "string", "format": "date-time" },
-            "ModifiedBy": { "type": "string" }
+            "LastModified": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "ModifiedBy": {
+              "type": "string"
+            }
           },
-          "required": ["LastModified", "ModifiedBy"]
+          "required": [
+            "LastModified",
+            "ModifiedBy"
+          ]
         },
         "UsageDocumentation": {
           "type": "array",
           "items": {
             "type": "object",
             "properties": {
-              "DocName": { "type": "string" },
-              "DocLink": { "type": "string", "format": "uri" }
+              "DocName": {
+                "type": "string"
+              },
+              "DocLink": {
+                "type": "string",
+                "format": "uri"
+              }
             },
-            "required": ["DocName", "DocLink"]
+            "required": [
+              "DocName",
+              "DocLink"
+            ]
           }
         },
         "Links": {
           "type": "array",
-          "items": { "type": "string", "format": "uri" }
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
         }
       },
-      "required": ["GeneralInformation", "Dependencies", "Interfaces"]
+      "required": ["SchemaType","GeneralInformation","Dependencies","Interfaces"]
     }
   },
-  "required": ["Type","Specification"]
+  "required": ["SubComponent"]
 }

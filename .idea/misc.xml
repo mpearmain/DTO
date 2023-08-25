@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.11 (DTO)" project-jdk-type="Python SDK" />
+  <component name="Black">
+    <option name="cmdArguments" value="black -t py39 -t py310 -t py311" />
+    <option name="pathToExecutable" value="C:\Users\VCB\AppData\Local\Programs\Python\Python311\Scripts\black.exe" />
+    <option name="sdkUUID" value="d7fa31fe-8dc3-4237-95e4-30d14732fccf" />
+  </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="Poetry (DTO)" project-jdk-type="Python SDK" />
 </project>

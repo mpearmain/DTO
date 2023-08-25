@@ -41,11 +41,18 @@ class SubComponent(ABC):
     """
 
     def __init__(self, schema: Dict[str, Any]):
-        self.type = schema.get("properties", {}).get("Type", {}).get("enum")
-        if self.type is None:
-            raise ValueError("Schema must contain an enum of allowed types under properties > Type.")
+        ALLOWED_SCHEMA_TYPES = ["Specification", "Implementation", "Infrastructure"]
+
+        # Extracting the SchemaType based on the updated schema structure
+        self.schema_type = \
+            schema.get("properties", {}).get("SubComponent", {}).get("properties", {}).get("SchemaType", {}).get("enum",
+                                                                                                                 [])[0]
+
+        if self.schema_type not in ALLOWED_SCHEMA_TYPES:
+            raise ValueError(f"SchemaType must be set to an allowed type {', '.join(ALLOWED_SCHEMA_TYPES)}.")
+
         self.model_factory = warlock.model_factory(schema)
-        self.instance = None  # Placeholder for the instance created from the schema
+        self.instance = None
 
     def load_instance(self, json_data: Dict[str, Any]) -> None:
         """
@@ -93,7 +100,7 @@ class Component:
         self.implementation = self._validate_subcomponent(implementation)
         self.infrastructure = self._validate_subcomponent(infrastructure)
         self.configuration: Optional[Dict[str, Any]] = None
-        logger.info("Component initialized successfully.")
+        logger.info("Component initialised successfully.")
 
     @staticmethod
     def _validate_subcomponent(subcomponent: Optional[SubComponent]) -> Optional[SubComponent]:

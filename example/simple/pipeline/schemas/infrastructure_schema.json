@@ -2,15 +2,11 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Pipeline Infrastructure Schema",
   "type": "object",
-  "schemaType": "Infrastructure",
   "properties": {
-    "Type": {
-      "type": "string",
-      "enum": ["Specification", "Implementation", "Infrastructure"]
-    },
-    "Infrastructure": {
+    "SubComponent": {
       "type": "object",
       "properties": {
+        "SchemaType": {"type": "string", "enum": ["Specification", "Implementation", "Infrastructure"]},
         "Version": {"type": "string"},
         "Compute": {"type": "object", "properties": {"Type": {"type": "string"}, "Configuration": {"type": "object"}}, "required": ["Type", "Configuration"]},
         "Orchestration": {"type": "object", "properties": {"Type": {"type": "string"}, "Configuration": {"type": "object"}}, "required": ["Type", "Configuration"]},
@@ -20,8 +16,8 @@
         "Environment": {"type": "object", "properties": {"Type": {"type": "string"}, "Configuration": {"type": "object"}}, "required": ["Type", "Configuration"]},
         "Monitoring": {"type": "object", "properties": {"Type": {"type": "string"}, "Configuration": {"type": "object"}}, "required": ["Type", "Configuration"]}
       },
-      "required": ["Version", "Compute", "Orchestration", "Storage", "Persistence", "Identity", "Environment", "Monitoring"]
+      "required": ["SchemaType","Version", "Compute", "Orchestration", "Storage", "Persistence", "Identity", "Environment", "Monitoring"]
     }
   },
-  "required": ["Type","Infrastructure"]
+  "required": ["SubComponent"]
 }

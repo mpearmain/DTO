@@ -29,7 +29,8 @@ infrastructure_schema = load_json('./schemas/infrastructure_schema.json')
 
 # Create an instance of SubComponent for Specification
 specification = SubComponent(schema=specification_schema)
-specification.set_attribute("Type", "Specification")
+specification.load_instance()
+specification.set_attribute("SchemaType", "Specification")
 specification.set_attribute("GeneralInformation", {
     "Name": "SampleComponent",
     "Version": "1.0",
@@ -43,7 +44,8 @@ specification.set_attribute("Dependencies", [
 
 # Create an instance of SubComponent for Implementation
 implementation = SubComponent(schema=implementation_schema)
-implementation.set_attribute("Type", "Implementation")
+implementation.load_instance()
+implementation.set_attribute("SchemaType", "Implementation")
 implementation.set_attribute("Version", "1.0.0")
 implementation.set_attribute("Engine", "Spark")
 implementation.set_attribute("Resources", {"CPU": 8, "RAM": "48Gi", "GPU": "None"})
@@ -55,7 +57,8 @@ implementation.set_attribute("Query",
 
 # Create an instance of SubComponent for Infrastructure
 infrastructure = SubComponent(schema=infrastructure_schema)
-infrastructure.set_attribute("Type", "Infrastructure")
+infrastructure.load_instance()
+infrastructure.set_attribute("SchemaType", "Infrastructure")
 infrastructure.set_attribute("Version", "1.0.0")
 infrastructure.set_attribute("Compute", {"Type": "shared",
                                          "Configuration": {"resourceRequirements": "High",
