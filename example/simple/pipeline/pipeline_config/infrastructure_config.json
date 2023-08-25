@@ -2,19 +2,11 @@
   "SubComponent": {
     "SchemaType": "Infrastructure",
     "Version": "1.0.0",
-    "Compute": {
-      "Type": "shared",
-      "Configuration": {
-        "resourceRequirements": "High",
-        "availabilityZone": "us-west-2"
-      }
+    "Compute": {"Type": "shared",
+      "Configuration": {"resourceRequirements": "High","availabilityZone": "us-west-2"}
     },
-    "Orchestration": {
-      "Type": "workflow",
-      "Configuration": {
-        "workflowEngine": "Abstract Engine",
-        "schedule": "Flexible"
-      }
+    "Orchestration": {"Type": "workflow",
+      "Configuration": {"workflowEngine": "Abstract Engine","schedule": "Flexible"}
     },
     "Storage": {
       "Type": "cloud",

@@ -40,11 +40,22 @@ class ComponentParser:
         self.tx = tx
 
     def parse(self, data: Dict[str, Any], parent_node=None, label: str = 'Component'):
-        properties = {k: v for k, v in data.items() if not isinstance(v, (dict, list))}
-        node = self._create_node(properties, label)
+        # If SchemaType exists in the data, create a node for it and set it as the parent node
+        schema_type = data.get("SchemaType")
+        if schema_type and not parent_node:
+            parent_node = self._create_node({"SchemaType": schema_type}, schema_type)
+
+        # Create a node for the current data
+        node = self._create_node(data, label)
+
+        # If there's a parent node, create a relationship
         if parent_node:
             self._create_relationship(parent_node, node)
+
+        # Recursively process nested dictionaries
         for key, value in data.items():
+            if key == "SchemaType":  # Skip SchemaType since we've already processed it
+                continue
             if isinstance(value, dict):
                 self.parse(value, node, key)
             elif isinstance(value, list):
@@ -53,7 +64,9 @@ class ComponentParser:
                         self.parse({key: item}, node, key)
 
     def _create_node(self, properties: Dict[str, Any], label: str) -> int:
-        result = self.tx.run("CREATE (n:" + label + " $props) RETURN id(n)", props=properties)
+        # Only add properties that are not dictionaries
+        props = {k: v for k, v in properties.items() if not isinstance(v, dict)}
+        result = self.tx.run("CREATE (n:" + label + " $props) RETURN id(n)", props=props)
         node_id = result.single()[0]
         return node_id
 
