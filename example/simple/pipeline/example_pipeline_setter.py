@@ -7,12 +7,12 @@ and infrastructure using the SubComponent class. The process involves the follow
 using dynamically created setter methods.
 3. The attributes are automatically validated against the corresponding JSON schema when set using the setter methods.
 4. A Component instance is created using the SubComponent instances.
-5. The combined configuration of the DTOComponent is retrieved.
+5. The combined configuration of the component is retrieved.
 
 The validation ensures that the attributes for each subcomponent adhere to the structure and constraints defined in the
 corresponding JSON schema.
 """
-from src.DTOComponent import Component, SubComponent
+from src.component import Component, SubComponent
 import json
 
 
@@ -73,6 +73,6 @@ infrastructure.set_attribute("Orchestration", {"Type": "Kubernetes",
 # Create a Component instance using the previously defined SubComponents
 pipeline = Component(specification=specification, implementation=implementation, infrastructure=infrastructure)
 
-# Get the combined configuration of the DTOComponent
+# Get the combined configuration of the component
 configuration = pipeline.configure()
 print(configuration)  # Print or use the combined configuration as needed

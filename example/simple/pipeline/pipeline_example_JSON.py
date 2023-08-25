@@ -10,13 +10,13 @@ Each SubComponent requires a JSON schema and metadata that conforms to that sche
 assigned to them.
 4. The metadata is automatically validated against the corresponding JSON schema when assigned to a SubComponent.
 5. A Component instance is created using the SubComponent instances.
-6. The combined configuration of the DTOComponent is retrieved.
+6. The combined configuration of the component is retrieved.
 
 The validation ensures that the metadata for each subcomponent adheres to the structure and constraints defined in the
 corresponding JSON schema.
 """
 import json
-from DTOComponent import Component, SubComponent  # Adjust the import path as needed
+from component import Component, SubComponent  # Adjust the import path as needed
 
 
 def load_json(file_path):

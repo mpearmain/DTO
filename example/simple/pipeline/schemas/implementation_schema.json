@@ -1,51 +1,20 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Subcomponent Implementation Schema",
+  "title": "Component Implementation Schema",
   "type": "object",
+  "schemaType": "Implementation",
   "properties": {
-    "Type": {
-      "type": "string",
-      "enum": ["Specification", "Implementation", "Infrastructure"]
-    },
     "Implementation": {
       "type": "object",
       "properties": {
-        "Version": { "type": "string" },
-        "Engine": {
-          "type": "string",
-          "enum": ["Spark", "Flink", "pandas", "polars", "duckdb", "custom"]
-        },
-        "Resources": {
-          "type": "object",
-          "properties": {
-            "CPU": { "type": "integer" },
-            "RAM": { "type": "string" },
-            "GPU": { "type": "string", "default": "None" }
-          },
-          "required": ["CPU", "RAM"]
-        },
-        "Execution": {
-          "type": "object",
-          "properties": {
-            "JobType": {
-              "type": "string",
-              "enum": ["batch", "streaming"]
-            },
-            "ScheduleExecution": {
-              "type": "string",
-              "pattern": "^\\d{2}:\\d{2}:\\d{2}$"
-            },
-            "Interval": { "type": "string" }
-          },
-          "required": ["JobType", "ScheduleExecution"]
-        },
-        "Query": { "type": "string" }
+        "Version": {"type": "string"},
+        "Engine": {"type": "string", "enum": ["Spark", "Flink", "pandas", "polars", "duckdb", "custom"]},
+        "Resources": {"type": "object", "properties": {"CPU": {"type": "integer"}, "RAM": {"type": "string"}, "GPU": {"type": "string", "default": "None"}}, "required": ["CPU", "RAM"]},
+        "Execution": {"type": "object", "properties": {"JobType": {"type": "string", "enum": ["batch", "streaming"]}, "ScheduleExecution": {"type": "string", "pattern": "^\\d{2}:\\d{2}:\\d{2}$"}, "Interval": {"type": "string"}}, "required": ["JobType", "ScheduleExecution"]},
+        "Query": {"type": "string"}
       },
       "required": ["Version", "Engine", "Resources", "Execution", "Query"]
     }
   },
-  "required": [
-    "Type",
-    "Implementation"
-  ]
+  "required": ["Implementation"]
 }

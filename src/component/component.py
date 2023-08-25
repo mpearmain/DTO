@@ -80,7 +80,7 @@ class SubComponent(ABC):
 
 class Component:
     """
-    Represents a complete DTOComponent, consisting of specification, implementation, and infrastructure.
+    Represents a complete component, consisting of specification, implementation, and infrastructure.
 
     :param specification: SubComponent object representing the specification contract.
     :param implementation: SubComponent object representing the implementation (optional).
@@ -112,10 +112,10 @@ class Component:
 
     def configure(self) -> Dict[str, Any]:
         """
-        Bind all the components on its constituent parts to have the total configuration of the DTOComponent.
+        Bind all the components on its constituent parts to have the total configuration of the component.
         Only the specification contract is required, implementation and infrastructure are optional.
 
-        :return: A dictionary containing the combined configuration of the DTOComponent.
+        :return: A dictionary containing the combined configuration of the component.
         """
         try:
             # Assign the metadata to the configuration
