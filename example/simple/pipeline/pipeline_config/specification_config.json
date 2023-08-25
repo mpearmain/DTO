@@ -39,11 +39,7 @@
     ],
     "InternalResources": ["Resource1", "Resource2"],
     "DataContract": [
-      {
-        "Contract": {
-          "Name": "SampleContract",
-          "Description": "A sample data contract",
-          "Attributes": [
+      {"Contract": {"Name": "SampleContract","Description": "A sample data contract","Attributes": [
             {
               "Name": "Attribute1",
               "Type": "int",
@@ -59,6 +55,28 @@
                       {
                         "Name": "Dependency1",
                         "Type": "internal",
+                        "Details": "Details1"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+         {
+              "Name": "Attribute2",
+              "Type": "string",
+              "Description": "An string attribute",
+              "Source": "Source1",
+              "Privacy": "Public",
+              "BusinessCriticality": "Medium",
+              "Transformation": {
+                "Steps": [
+                  {
+                    "Description": "Step2",
+                    "Dependencies": [
+                      {
+                        "Name": "Dependency2",
+                        "Type": "confidential",
                         "Details": "Details1"
                       }
                     ]
