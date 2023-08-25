@@ -57,9 +57,14 @@ class ComponentParser:
             if key == "SchemaType":  # Skip SchemaType since we've already processed it
                 continue
             if isinstance(value, dict):
-                child_node = self._create_node(value, key)
+                child_node = self._create_node({}, key)  # Create a node for the key
                 self._create_relationship(node, child_node, key)
-                self.parse(value, child_node, key)
+                for sub_key, sub_value in value.items():
+                    if not isinstance(sub_value, dict):
+                        sub_node = self._create_node({sub_key: sub_value}, sub_key)
+                        self._create_relationship(child_node, sub_node, sub_key)
+                    else:
+                        self.parse(sub_value, child_node, sub_key)
             elif isinstance(value, list):
                 for item in value:
                     if isinstance(item, dict):
