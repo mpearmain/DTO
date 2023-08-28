@@ -5,10 +5,10 @@ Assumes you have neo4j instance installed: https://neo4j.com/download-center/#co
 
 """
 
-
 import json
 from component import Component, SubComponent  # Adjust the import path as needed
 from graph import Neo4jConnector
+
 
 def load_json(file_path):
     """Load JSON data from a file."""
@@ -37,7 +37,8 @@ implementation.load_instance(implementation_metadata)
 infrastructure.load_instance(infrastructure_metadata)
 
 # Create a Component instance
-pipeline = Component(specification=specification, implementation=implementation, infrastructure=infrastructure)
+pipeline = Component(name='data_pipeline', specification=specification, implementation=implementation,
+                     infrastructure=infrastructure)
 
 # Get the combined configuration
 configuration = pipeline.configure()

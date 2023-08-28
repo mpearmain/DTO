@@ -94,8 +94,9 @@ class Component:
     :param infrastructure: SubComponent object representing the infrastructure (optional).
     """
 
-    def __init__(self, specification: SubComponent, implementation: Optional[SubComponent] = None,
+    def __init__(self, name: str, specification: SubComponent, implementation: Optional[SubComponent] = None,
                  infrastructure: Optional[SubComponent] = None):
+        self.name = name
         self.specification = self._validate_subcomponent(specification)
         self.implementation = self._validate_subcomponent(implementation)
         self.infrastructure = self._validate_subcomponent(infrastructure)
@@ -124,12 +125,13 @@ class Component:
 
         :return: A dictionary containing the combined configuration of the component.
         """
+        self.configuration = {'Component': self.name}
         try:
             # Assign the metadata to the configuration
-            self.configuration = {'specification': self.specification.instance}
+            self.configuration = {'Specification': self.specification.instance}
 
             # Assign implementation and infrastructure if they exist
-            for attr_name in ['implementation', 'infrastructure']:
+            for attr_name in ['Implementation', 'Infrastructure']:
                 attr = getattr(self, attr_name, None)
                 if attr:
                     self.configuration[attr_name] = attr.instance

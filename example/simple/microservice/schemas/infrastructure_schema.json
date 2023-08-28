@@ -3,9 +3,10 @@
   "title": "Pipeline Infrastructure Schema",
   "type": "object",
   "properties": {
-    "Infrastructure": {
+    "SubComponent": {
       "type": "object",
       "properties": {
+        "SchemaType": {"type": "string", "enum": ["Specification", "Implementation", "Infrastructure"]},
         "Version": { "type": "string" },
         "Compute": {
           "type": "object",
@@ -64,8 +65,9 @@
           "required": ["Type", "Configuration"]
         }
       },
-      "required": ["Version", "Compute", "Orchestration", "Storage", "Persistence", "Identity", "Environment", "Monitoring"]
+      "required": ["SchemaType","Version", "Compute", "Orchestration", "Storage", "Persistence", "Identity",
+        "Environment", "Monitoring"]
     }
   },
-  "required": ["Infrastructure"]
+  "required": ["SubComponent"]
 }
