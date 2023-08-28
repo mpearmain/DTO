@@ -12,7 +12,7 @@ using dynamically created setter methods.
 The validation ensures that the attributes for each subcomponent adhere to the structure and constraints defined in the
 corresponding JSON schema.
 """
-from src.component import Component, SubComponent
+from dtocomponent.component import Component, SubComponent
 import json
 
 
@@ -23,9 +23,9 @@ def load_json(file_path):
 
 
 # Loading the JSON schemas for each subcomponent
-specification_schema = load_json('./schemas/specification_schema.json')
-implementation_schema = load_json('./schemas/implementation_schema.json')
-infrastructure_schema = load_json('./schemas/infrastructure_schema.json')
+specification_schema = load_json('./example/simple/pipeline/schemas/specification_schema.json')
+implementation_schema = load_json('./example/simple/pipeline/schemas/implementation_schema.json')
+infrastructure_schema = load_json('./example/simple/pipeline//schemas/infrastructure_schema.json')
 
 # Create an instance of SubComponent for Specification
 specification = SubComponent(schema=specification_schema)

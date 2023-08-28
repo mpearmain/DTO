@@ -2,16 +2,25 @@
   "SubComponent": {
     "SchemaType": "Implementation",
     "Version": "1.0.0",
-    "Engine": "Spark",
-    "Resources": {
-      "CPU": 8,
-      "RAM": "48Gi"
+    "Engine": {
+      "Type": "Spark",
+      "Resources": {
+        "CPU": 8,
+        "RAM": "48Gi"
+      }
     },
     "Execution": {
-      "JobType": "batch",
-      "ScheduleExecution": "00:00:00",
-      "Interval": "6hrs"
+      "Type": "Batch",
+      "Resource": {
+        "ScheduleExecution": "00:00:00",
+        "Interval": "6hrs"
+      }
     },
-    "Query": "SELECT foo, bar, baz FROM foobar f JOIN baz b ON f.id=b.id WHERE foo.blah > baz."
+    "Operation": {
+      "Type": "SQL",
+      "Resource": {
+        "Query": "SELECT foo, bar, baz FROM foobar f JOIN baz b ON f.id=b.id WHERE foo.blah > baz."
+      }
+    }
   }
 }

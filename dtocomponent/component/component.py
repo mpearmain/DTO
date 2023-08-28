@@ -45,8 +45,8 @@ class SubComponent(ABC):
 
         # Extracting the SchemaType based on the updated schema structure
         self.schema_type = \
-            schema.get("properties", {}).get("SubComponent", {}).get("properties", {}).get("SchemaType", {}).get("enum",
-                                                                                                                 [])[0]
+        schema.get("properties", {}).get("SubComponent", {}).get("properties", {}).get("SchemaType", {}).get("enum",
+                                                                                                             [])[0]
 
         if self.schema_type not in ALLOWED_SCHEMA_TYPES:
             raise ValueError(f"SchemaType must be set to an allowed type {', '.join(ALLOWED_SCHEMA_TYPES)}.")
@@ -71,7 +71,7 @@ class SubComponent(ABC):
         """
         if self.instance is None:
             raise RuntimeError("Instance has not been loaded. Call load_instance() first.")
-        return getattr(self.instance, attr_name)
+        return self.instance["SubComponent"].get(attr_name)
 
     def set_attribute(self, attr_name: str, value: Any) -> None:
         """
@@ -87,11 +87,23 @@ class SubComponent(ABC):
 
 class Component:
     """
-    Represents a complete component, consisting of specification, implementation, and infrastructure.
+    Represents a complete component in a digital twin system, consisting of specification, implementation, and infrastructure.
 
-    :param specification: SubComponent object representing the specification contract.
-    :param implementation: SubComponent object representing the implementation (optional).
-    :param infrastructure: SubComponent object representing the infrastructure (optional).
+    Attributes:
+        name (str): The name of the component.
+        specification (SubComponent): A SubComponent object representing the specification contract.
+        implementation (Optional[SubComponent]): A SubComponent object representing the implementation. Optional.
+        infrastructure (Optional[SubComponent]): A SubComponent object representing the infrastructure. Optional.
+        configuration (Optional[Dict[str, Any]]): The combined configuration of the component.
+
+    Methods:
+        configure: Generates a combined configuration of the component based on its subcomponents.
+
+    Example:
+        pipeline = Component(name='data_pipeline', specification=specification, implementation=implementation,
+                             infrastructure=infrastructure)
+        configuration = pipeline.configure()
+        print(configuration)
     """
 
     def __init__(self, name: str, specification: SubComponent, implementation: Optional[SubComponent] = None,
@@ -120,21 +132,39 @@ class Component:
 
     def configure(self) -> Dict[str, Any]:
         """
-        Bind all the components on its constituent parts to have the total configuration of the component.
-        Only the specification contract is required, implementation and infrastructure are optional.
+        Generates a combined configuration of the component based on its subcomponents.
 
-        :return: A dictionary containing the combined configuration of the component.
+        The method processes each subcomponent (specification, implementation, infrastructure) and retrieves its
+        SchemaType attribute to determine its type. The SchemaType attribute is then used as a key in the final
+        configuration dictionary, and the subcomponent data is added as its value. The SchemaType attribute itself
+        is removed from the subcomponent data to prevent redundancy.
+
+        The final configuration has the following structure:
+        {
+            'ComponentName': {
+                'Specification': { ... },
+                'Implementation': { ... },
+                'Infrastructure': { ... }
+            }
+        }
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the combined configuration of the component.
+
+        Raises:
+            Exception: If there's an error generating the configuration.
         """
-        self.configuration = {'Component': self.name}
+        self.configuration = {}
         try:
             # Assign the metadata to the configuration
-            self.configuration = {'Specification': self.specification.instance}
-
-            # Assign implementation and infrastructure if they exist
-            for attr_name in ['Implementation', 'Infrastructure']:
-                attr = getattr(self, attr_name, None)
-                if attr:
-                    self.configuration[attr_name] = attr.instance
+            for subcomponent_attr in ['specification', 'implementation', 'infrastructure']:
+                subcomponent = getattr(self, subcomponent_attr, None)
+                if subcomponent and subcomponent.instance:
+                    schema_type = subcomponent.get_attribute("SchemaType")
+                    subcomponent_data = subcomponent.instance["SubComponent"]
+                    # Remove the SchemaType attribute
+                    subcomponent_data.pop("SchemaType", None)
+                    self.configuration.setdefault(self.name, {})[schema_type] = subcomponent_data
 
             logger.info("Configuration generated successfully.")
             return self.configuration

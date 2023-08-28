@@ -8,28 +8,53 @@
       "properties": {
         "SchemaType": {"type": "string", "enum": ["Specification", "Implementation", "Infrastructure"]},
         "Version": {"type": "string"},
-        "Engine": {"type": "string", "enum": ["Spark", "Flink", "pandas", "polars", "duckdb", "custom"]},
-        "Resources": {
+        "Engine": {
           "type": "object",
           "properties": {
-            "CPU": {"type": "integer"},
-            "RAM": {"type": "string"},
-            "GPU": {"type": "string"}
+            "Type": {"type": "string", "enum": ["Spark", "Flink", "pandas", "polars", "duckdb", "custom"]},
+            "Resources": {
+              "type": "object",
+              "properties": {
+                "CPU": {"type": "integer"},
+                "RAM": {"type": "string"},
+                "GPU": {"type": "string", "optional": true}
+              },
+              "required": ["CPU", "RAM"]
+            }
           },
-          "required": ["CPU", "RAM"]
+          "required": ["Type", "Resources"]
         },
         "Execution": {
           "type": "object",
           "properties": {
-            "JobType": {"type": "string", "enum": ["batch", "streaming"]},
-            "ScheduleExecution": {"type": "string", "pattern": "^\\d{2}:\\d{2}:\\d{2}$"},
-            "Interval": {"type": "string"}
+            "Type": {"type": "string", "enum": ["Batch", "Streaming"]},
+            "Resource": {
+              "type": "object",
+              "properties": {
+                "ScheduleExecution": {"type": "string", "pattern": "^\\d{2}:\\d{2}:\\d{2}$"},
+                "Interval": {"type": "string"}
+              },
+              "required": ["ScheduleExecution", "Interval"]
+            }
           },
-          "required": ["JobType", "ScheduleExecution"]
+          "required": ["Type", "Resource"]
         },
-        "Query": {"type": "string"}
+        "Operation": {
+          "type": "object",
+          "properties": {
+            "Type": {"type": "string", "enum": ["SQL", "NoSQL", "GraphQL"]},
+            "Resource": {
+              "type": "object",
+              "properties": {
+                "Query": {"type": "string"}
+              },
+              "required": ["Query"]
+            }
+          },
+          "required": ["Type", "Resource"]
+        }
       },
-      "required": ["SchemaType", "Version", "Engine", "Resources", "Execution", "Query"]
+      "required": ["SchemaType", "Version", "Engine", "Execution", "Operation"]
     }
   },
   "required": ["SubComponent"]

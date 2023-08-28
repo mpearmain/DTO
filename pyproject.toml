@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dtocomponent"
-version = "0.1.0"
+version = "0.1.1"
 description = "This repository contains code for generating configuration objects to create digital twins via a component structure. It includes a core Component, which serves as the foundational building block for defining and validating components within the digital twin framework. The Component provides abstract classes for defining and validating components, such as specification, implementation, and infrastructure. These components are validated against JSON schemas"
 authors = ["mpearmain <michael.pearmain@gmail.com>"]
 license = "MIT"

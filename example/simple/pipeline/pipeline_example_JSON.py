@@ -15,7 +15,8 @@ The validation ensures that the metadata for each subcomponent adheres to the st
 corresponding JSON schema.
 """
 import json
-from component import Component, SubComponent  # Adjust the import path as needed
+from dtocomponent.component import Component, SubComponent
+
 
 
 def load_json(file_path):
@@ -25,14 +26,14 @@ def load_json(file_path):
 
 
 # Loading the JSON schemas for each subcomponent
-specification_schema = load_json('./schemas/specification_schema.json')
-implementation_schema = load_json('./schemas/implementation_schema.json')
-infrastructure_schema = load_json('./schemas/infrastructure_schema.json')
+specification_schema = load_json('./example/simple/pipeline/schemas/specification_schema.json')
+implementation_schema = load_json('./example/simple/pipeline/schemas/implementation_schema.json')
+infrastructure_schema = load_json('./example/simple/pipeline//schemas/infrastructure_schema.json')
 
 # Load metadata from JSON files
-specification_metadata = load_json('./pipeline_config/specification_config.json')
-implementation_metadata = load_json('./pipeline_config/implementation_config.json')
-infrastructure_metadata = load_json('./pipeline_config/infrastructure_config.json')
+specification_metadata = load_json('./example/simple/pipeline/pipeline_config/specification_config.json')
+implementation_metadata = load_json('./example/simple/pipeline/pipeline_config/implementation_config.json')
+infrastructure_metadata = load_json('./example/simple/pipeline/pipeline_config/infrastructure_config.json')
 
 # Create SubComponent instances
 specification = SubComponent(schema=specification_schema)
@@ -45,8 +46,10 @@ implementation.load_instance(implementation_metadata)
 infrastructure.load_instance(infrastructure_metadata)
 
 # Create a Component instance
-pipeline = Component(name='data_pipeline', specification=specification, implementation=implementation, infrastructure=infrastructure)
+pipeline = Component(name='data_pipeline', specification=specification, implementation=implementation,
+                     infrastructure=infrastructure)
 
 # Get the combined configuration
 configuration = pipeline.configure()
+print(list(configuration['data_pipeline'].keys()))
 print(configuration)  # Print or use the combined configuration as needed
