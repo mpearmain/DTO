@@ -37,12 +37,12 @@ implementation.load_instance(implementation_metadata)
 infrastructure.load_instance(infrastructure_metadata)
 
 # Create a Component instance
-pipeline = Component(name='DATA_PIPELINE_EXAMPLE', specification=specification, implementation=implementation,
+pipeline = Component(name='data_pipeline', specification=specification, implementation=implementation,
                      infrastructure=infrastructure)
 
 # Get the combined configuration
-# Get the combined configuration
 configuration = pipeline.configure()
+print(list(configuration['data_pipeline'].keys()))
 print(configuration)  # Print or use the combined configuration as needed
 
 # Connect to Neo4j and write the component configuration
@@ -55,7 +55,7 @@ connector = Neo4jConnector(uri, user, password)
 
 # Generate the Cypher queries
 queries = connector.generate_cypher_queries(configuration)
-
+print(queries)
 # Execute the Cypher queries on the Neo4j database
 connector.execute_cypher_queries(queries)
 

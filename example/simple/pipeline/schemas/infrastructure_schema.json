@@ -6,7 +6,7 @@
     "SubComponent": {
       "type": "object",
       "properties": {
-        "SchemaType": {"type": "string", "enum": ["Specification", "Implementation", "Infrastructure"]},
+        "SchemaType": {"type": "string", "enum": ["Specification", "Implementation", "Infrastructure", "DataContract"]},
         "Version": {"type": "string"},
         "Compute": {"type": "object", "properties": {"Type": {"type": "string"}, "Configuration": {"type": "object"}}, "required": ["Type", "Configuration"]},
         "Orchestration": {"type": "object", "properties": {"Type": {"type": "string"}, "Configuration": {"type": "object"}}, "required": ["Type", "Configuration"]},

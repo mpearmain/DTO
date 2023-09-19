@@ -1,0 +1,77 @@
+{
+  "SubComponent": {
+    "SchemaType": "DataContract",
+    "Version": "1.0.0",
+    "Name": "SampleContract",
+    "Description": "A sample data contract",
+    "Schema": {
+      "Type": "Table",
+      "Details": [
+        {
+          "Name": "Attribute1",
+          "Type": "int",
+          "Description": "An integer attribute",
+          "Source": "Source1",
+          "Privacy": "Public",
+          "BusinessCriticality": "High",
+          "Transformation": {
+            "Steps": [
+              {
+                "Description": "Step1",
+                "Dependencies": [
+                  {
+                    "Name": "Dependency1",
+                    "Type": "internal",
+                    "Details": "Details1"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Name": "Attribute2",
+          "Type": "string",
+          "Description": "An string attribute",
+          "Source": "Source1",
+          "Privacy": "Public",
+          "BusinessCriticality": "Medium",
+          "Transformation": {
+            "Steps": [
+              {
+                "Description": "Step2",
+                "Dependencies": [
+                  {
+                    "Name": "Dependency2",
+                    "Type": "confidential",
+                    "Details": "Details1"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "administration": {
+      "Type": "Governance",
+      "Details": {
+        "DataSteward": "Steward1",
+        "DataQuality": "High",
+        "DataClassification": "Class1",
+        "DataRetention": "5 years"
+      }
+    },
+    "Security": {
+      "Type": "AccessControl",
+      "Details": {
+        "AuthenticationService": "AuthnService",
+        "AuthorizationService": "AuthzService",
+        "AccessPolicies": [
+          "Policy1",
+          "Policy2"
+        ]
+      }
+    }
+  }
+}

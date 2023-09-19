@@ -41,12 +41,14 @@ class SubComponent(ABC):
     """
 
     def __init__(self, schema: Dict[str, Any]):
-        ALLOWED_SCHEMA_TYPES = ["Specification", "Implementation", "Infrastructure"]
+        # Its understood that hardcoding these values is probably suboptimal as it doesnt allow for simple extensions
+        # later, but for speed it's trivial to implement for a PoC
+        ALLOWED_SCHEMA_TYPES = ["Specification", "Implementation", "Infrastructure", "Data"]
 
         # Extracting the SchemaType based on the updated schema structure
         self.schema_type = \
-        schema.get("properties", {}).get("SubComponent", {}).get("properties", {}).get("SchemaType", {}).get("enum",
-                                                                                                             [])[0]
+            schema.get("properties", {}).get("SubComponent", {}).get("properties", {}).get("SchemaType", {}).get("enum",
+                                                                                                                 [])[0]
 
         if self.schema_type not in ALLOWED_SCHEMA_TYPES:
             raise ValueError(f"SchemaType must be set to an allowed type {', '.join(ALLOWED_SCHEMA_TYPES)}.")
@@ -94,7 +96,9 @@ class Component:
         specification (SubComponent): A SubComponent object representing the specification contract.
         implementation (Optional[SubComponent]): A SubComponent object representing the implementation. Optional.
         infrastructure (Optional[SubComponent]): A SubComponent object representing the infrastructure. Optional.
+        data (Optional[Dict[str, Any]]): A SubComponent object representing the data. Optional.
         configuration (Optional[Dict[str, Any]]): The combined configuration of the component.
+
 
     Methods:
         configure: Generates a combined configuration of the component based on its subcomponents.
@@ -107,11 +111,12 @@ class Component:
     """
 
     def __init__(self, name: str, specification: SubComponent, implementation: Optional[SubComponent] = None,
-                 infrastructure: Optional[SubComponent] = None):
+                 infrastructure: Optional[SubComponent] = None, data: Optional[SubComponent] = None):
         self.name = name
         self.specification = self._validate_subcomponent(specification)
         self.implementation = self._validate_subcomponent(implementation)
         self.infrastructure = self._validate_subcomponent(infrastructure)
+        self.data = self._validate_subcomponent(data)
         self.configuration: Optional[Dict[str, Any]] = None
         logger.info("Component initialised successfully.")
 
@@ -145,6 +150,7 @@ class Component:
                 'Specification': { ... },
                 'Implementation': { ... },
                 'Infrastructure': { ... }
+                'Data': { ... }
             }
         }
 
@@ -157,7 +163,7 @@ class Component:
         self.configuration = {}
         try:
             # Assign the metadata to the configuration
-            for subcomponent_attr in ['specification', 'implementation', 'infrastructure']:
+            for subcomponent_attr in ['specification', 'implementation', 'infrastructure', 'data']:
                 subcomponent = getattr(self, subcomponent_attr, None)
                 if subcomponent and subcomponent.instance:
                     schema_type = subcomponent.get_attribute("SchemaType")

@@ -8,143 +8,145 @@
       "properties": {
         "SchemaType": {
           "type": "string",
-          "enum": ["Specification", "Implementation", "Infrastructure"]
+          "enum": ["Specification", "Implementation", "Infrastructure", "DataContract"]
         },
-        "Attributes": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "Type": {
-                "type": "string",
-                "enum": ["GeneralInformation", "Dependencies", "Interfaces", "DataContract", "AuditInformation", "UsageDocumentation", "Links", "InternalResources"]
-              },
-              "Details": {
+        "Version": {"type": "string"},
+        "Name": { "type": "string" },
+        "Description": { "type": "string" },
+        "Tags": {"type": "array", "items": { "type": "string" }},
+        "Owner": { "type": "string" },
+        "Contact": {
+          "type": "object",
+          "properties": {
+            "Name": { "type": "string" },
+            "Email": { "type": "string", "format": "email" }
+          }
+        },
+        "SLA": { "type": "string" },
+        "IncidenceResponseTime": { "type": "string" },
+        "CodingStyleGuide": { "type": "string" },
+        "VCSLocation": { "type": "string", "format": "uri" },
+        "AccessRequestContact": { "type": "string" },
+        "ResiliencyAndRecovery": { "type": "string" },
+        "PerformanceMetrics": { "type": "string" },
+        "ScalabilityInformation": { "type": "string" },
+        "SecurityCompliance": { "type": "string" }
+      }
+    },
+    "Dependencies": {
+      "type": "object",
+      "properties": {
+        "Type": {
+          "type": "string",
+          "enum": ["Dependencies"]
+        },
+        "Details": {
+          "type": "object",
+          "properties": {
+            "DependencyName": { "type": "string" },
+            "DependencyType": {
+              "type": "string",
+              "enum": ["internal", "external"]
+            },
+            "DependencyDetails": { "type": "string" }
+          }
+        }
+      }
+    },
+    "Interfaces": {
+      "type": "object",
+      "properties": {
+        "Type": {
+          "type": "string",
+          "enum": ["Interfaces"]
+        },
+        "Details": {
+          "type": "object",
+          "properties": {
+            "ports": {
+              "type": "array",
+              "items": {
                 "type": "object",
                 "properties": {
-                  "resources": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "ports": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "Name": { "type": "string" },
-                        "Type": { "type": "string", "enum": ["input", "output"] },
-                        "Services": {
-                          "type": "array",
-                          "items": { "type": "string" }
-                        }
-                      }
-                    }
-                  },
                   "Name": { "type": "string" },
-                  "Version": { "type": "string" },
-                  "Description": { "type": "string" },
-                  "Tags": {
+                  "Type": {
+                    "type": "string",
+                    "enum": ["input", "output"]
+                  },
+                  "Services": {
                     "type": "array",
                     "items": { "type": "string" }
-                  },
-                  "Owner": { "type": "string" },
-                  "Contact": {
-                    "type": "object",
-                    "properties": {
-                      "Name": { "type": "string" },
-                      "Email": { "type": "string", "format": "email" }
-                    }
-                  },
-                  "SLA": { "type": "string" },
-                  "IncidenceResponseTime": { "type": "string" },
-                  "CodingStyleGuide": { "type": "string" },
-                  "VCSLocation": { "type": "string", "format": "uri" },
-                  "AccessRequestContact": { "type": "string" },
-                  "ResiliencyAndRecovery": { "type": "string" },
-                  "PerformanceMetrics": { "type": "string" },
-                  "ScalabilityInformation": { "type": "string" },
-                  "SecurityCompliance": { "type": "string" },
-                  "DependencyName": { "type": "string" },
-                  "DependencyType": { "type": "string", "enum": ["internal", "external"] },
-                  "DependencyDetails": { "type": "string" },
-                  "Contract": {
-                    "type": "object",
-                    "properties": {
-                      "Name": { "type": "string" },
-                      "Description": { "type": "string" },
-                      "Attributes": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "Name": { "type": "string" },
-                            "Type": { "type": "string", "enum": ["int", "float", "string", "boolean", "date", "object"] },
-                            "Description": { "type": "string" },
-                            "Source": { "type": "string" },
-                            "Privacy": { "type": "string" },
-                            "BusinessCriticality": { "type": "string" },
-                            "Transformation": {
-                              "type": "object",
-                              "properties": {
-                                "Steps": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "object",
-                                    "properties": {
-                                      "Description": { "type": "string" },
-                                      "Dependencies": {
-                                        "type": "array",
-                                        "items": {
-                                          "type": "object",
-                                          "properties": {
-                                            "Name": { "type": "string" },
-                                            "Type": { "type": "string" },
-                                            "Details": { "type": "string" }
-                                          }
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "DataGovernance": {
-                        "type": "object",
-                        "properties": {
-                          "DataSteward": { "type": "string" },
-                          "DataQuality": { "type": "string" },
-                          "DataClassification": { "type": "string" },
-                          "DataRetention": { "type": "string" }
-                        }
-                      },
-                      "AccessControl": {
-                        "type": "object",
-                        "properties": {
-                          "AuthenticationService": { "type": "string" },
-                          "AuthorizationService": { "type": "string" },
-                          "AccessPolicies": {
-                            "type": "array",
-                            "items": { "type": "string" }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "LastModified": { "type": "string", "format": "date-time" },
-                  "ModifiedBy": { "type": "string" },
-                  "DocName": { "type": "string" },
-                  "DocLink": { "type": "string", "format": "uri" },
-                  "Links": {
-                    "type": "array",
-                    "items": { "type": "string", "format": "uri" }
                   }
                 }
               }
+            }
+          }
+        }
+      }
+    },
+    "InternalResources": {
+      "type": "object",
+      "properties": {
+        "Type": {
+          "type": "string",
+          "enum": ["InternalResources"]
+        },
+        "Details": {
+          "type": "object",
+          "properties": {
+            "resources": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "AuditInformation": {
+      "type": "object",
+      "properties": {
+        "Type": {
+          "type": "string",
+          "enum": ["AuditInformation"]
+        },
+        "Details": {
+          "type": "object",
+          "properties": {
+            "LastModified": { "type": "string", "format": "date-time" },
+            "ModifiedBy": { "type": "string" }
+          }
+        }
+      }
+    },
+    "UsageDocumentation": {
+      "type": "object",
+      "properties": {
+        "Type": {
+          "type": "string",
+          "enum": ["UsageDocumentation"]
+        },
+        "Details": {
+          "type": "object",
+          "properties": {
+            "DocName": { "type": "string" },
+            "DocLink": { "type": "string", "format": "uri" }
+          }
+        }
+      }
+    },
+    "Links": {
+      "type": "object",
+      "properties": {
+        "Type": {
+          "type": "string",
+          "enum": ["Links"]
+        },
+        "Details": {
+          "type": "object",
+          "properties": {
+            "links": {
+              "type": "array",
+              "items": { "type": "string", "format": "uri" }
             }
           }
         }

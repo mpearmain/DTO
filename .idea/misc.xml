@@ -5,5 +5,5 @@
     <option name="pathToExecutable" value="C:\Users\VCB\AppData\Local\Programs\Python\Python311\Scripts\black.exe" />
     <option name="sdkUUID" value="d7fa31fe-8dc3-4237-95e4-30d14732fccf" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.11(venv)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Poetry (DTO)" project-jdk-type="Python SDK" />
 </project>

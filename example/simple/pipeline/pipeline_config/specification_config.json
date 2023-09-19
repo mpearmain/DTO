@@ -1,129 +1,67 @@
 {
   "SubComponent": {
     "SchemaType": "Specification",
-    "Attributes": [
-      {
-        "Type": "GeneralInformation",
-        "Details": {
-          "Name": "SampleComponent",
-          "Version": "1.0",
-          "Description": "A sample component for demonstration",
-          "Tags": ["example", "demo"],
-          "Owner": "John Doe",
-          "Contact": {"Name": "Jane Smith","Email": "jane@example.com"},
-          "SLA": "Standard",
-          "IncidenceResponseTime": "24 hours",
-          "CodingStyleGuide": "Company Standard",
-          "VCSLocation": "https://github.com/example/sample",
-          "AccessRequestContact": "access@example.com",
-          "ResiliencyAndRecovery": "High",
-          "PerformanceMetrics": "Standard Metrics",
-          "ScalabilityInformation": "Scalable up to 1000 users",
-          "SecurityCompliance": "Compliant with company policy"
-        }
-      },
-      {
-        "Type": "Dependencies",
-        "Details": {
-          "DependencyName": "Database",
-          "DependencyType": "internal",
-          "DependencyDetails": "MySQL Database"
-        }
-      },
-      {
-        "Type": "Interfaces",
-        "Details": {"ports": [{"Name": "InputPort","Type": "input","Services": ["Service1", "Service2"]}]}
-      },
-      {
-        "Type": "InternalResources",
-        "Details": {"resources": ["Resource1", "Resource2"]}
-      },
-      {
-        "Type": "DataContract",
-        "Details": {
-          "Contract": {
-            "Name": "SampleContract",
-            "Description": "A sample data contract",
-            "Attributes": [
-              {
-                "Name": "Attribute1",
-                "Type": "int",
-                "Description": "An integer attribute",
-                "Source": "Source1",
-                "Privacy": "Public",
-                "BusinessCriticality": "High",
-                "Transformation": {
-                  "Steps": [
-                    {
-                      "Description": "Step1",
-                      "Dependencies": [
-                        {
-                          "Name": "Dependency1",
-                          "Type": "internal",
-                          "Details": "Details1"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              },
-              {
-                "Name": "Attribute2",
-                "Type": "string",
-                "Description": "An string attribute",
-                "Source": "Source1",
-                "Privacy": "Public",
-                "BusinessCriticality": "Medium",
-                "Transformation": {
-                  "Steps": [
-                    {
-                      "Description": "Step2",
-                      "Dependencies": [
-                        {
-                          "Name": "Dependency2",
-                          "Type": "confidential",
-                          "Details": "Details1"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              }
-            ],
-            "DataGovernance": {
-              "DataSteward": "Steward1",
-              "DataQuality": "High",
-              "DataClassification": "Class1",
-              "DataRetention": "5 years"
-            },
-            "AccessControl": {
-              "AuthenticationService": "AuthService",
-              "AuthorizationService": "AuthzService",
-              "AccessPolicies": ["Policy1", "Policy2"]
-            }
-          }
-        }
-      },
-      {
-        "Type": "AuditInformation",
-        "Details": {
-          "LastModified": "2023-08-16T00:00:00Z",
-          "ModifiedBy": "John Doe"
-        }
-      },
-      {
-        "Type": "UsageDocumentation",
-        "Details": {
-          "DocName": "UserGuide",
-          "DocLink": "https://example.com/userguide"
-        }
-      },
-      {
-        "Type": "Links",
-        "Details": {
-          "links": ["https://example.com/link1", "https://example.com/link2"]
-        }
-      }
-    ]
+    "Version": "1.0.0",
+    "Name": "SampleComponent",
+    "Description": "A sample component for demonstration",
+    "Tags": ["example", "demo"],
+    "Owner": "John Doe",
+    "Contact": {
+      "Name": "Jane Smith",
+      "Email": "jane@example.com"
+    },
+    "SLA": "Standard",
+    "IncidenceResponseTime": "24 hours",
+    "CodingStyleGuide": "Company Standard",
+    "VCSLocation": "https://github.com/example/sample",
+    "AccessRequestContact": "access@example.com",
+    "ResiliencyAndRecovery": "High",
+    "PerformanceMetrics": "Standard Metrics",
+    "ScalabilityInformation": "Scalable up to 1000 users",
+    "SecurityCompliance": "Compliant with company policy"
+  },
+  "Dependencies": {
+    "Type": "Dependencies",
+    "Details": {
+      "DependencyName": "Database",
+      "DependencyType": "internal",
+      "DependencyDetails": "MySQL Database"
+    }
+  },
+  "Interfaces": {
+    "Type": "Interfaces",
+    "Details": {
+      "ports": [{
+        "Name": "InputPort",
+        "Type": "input",
+        "Services": ["Service1", "Service2"]
+      }]
+    }
+  },
+  "InternalResources": {
+    "Type": "InternalResources",
+    "Details": {
+      "resources": ["Resource1", "Resource2"]
+    }
+  },
+  "AuditInformation": {
+    "Type": "AuditInformation",
+    "Details": {
+      "LastModified": "2023-08-16T00:00:00Z",
+      "ModifiedBy": "John Doe"
+    }
+  },
+  "UsageDocumentation": {
+    "Type": "UsageDocumentation",
+    "Details": {
+      "DocName": "UserGuide",
+      "DocLink": "https://example.com/userguide"
+    }
+  },
+  "Links": {
+    "Type": "Links",
+    "Details": {
+      "links": ["https://example.com/link1", "https://example.com/link2"]
+    }
   }
 }

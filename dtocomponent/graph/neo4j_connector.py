@@ -39,7 +39,7 @@ class Neo4jConnector:
         - List[str]: The list of generated Cypher queries.
         """
         builder = GraphBuilder()
-        return builder.generate_cypher(component)
+        return builder.generate_cypher_commands(component)
 
     def execute_cypher_queries(self, queries: List[str]) -> None:
         """
@@ -53,32 +53,97 @@ class Neo4jConnector:
                 session.run(query)
 
 
+from typing import Dict, List, Any
+
+
 class GraphBuilder:
-    """A class to generate Cypher commands from a given nested dictionary."""
+    """
+    GraphBuilder class to generate Cypher commands for creating nodes
+    and relationships in a Neo4j graph database based on a given nested dictionary structure.
+    """
+    SPECIAL_KEYWORDS = ["Type", "Resources", "Configuration", "Details"]
+
+    def __init__(self):
+        pass  # Empty constructor for now. Can be expanded if needed.
 
     @staticmethod
-    def _create_node(label: str, properties: Dict[str, Any] = None) -> Tuple[str, str]:
+    def generate_cypher_commands(data: Dict[str, Any]) -> List[str]:
         """
-        Create a node Cypher command.
+        Generate Cypher commands based on the given nested dictionary.
 
         Parameters:
+        - data (Dict[str, Any]): Input nested dictionary.
+
+        Returns:
+        - List[str]: List of Cypher commands.
+        """
+        root_key = list(data.keys())[0]
+        commands = [GraphBuilder._create_node(root_key, root_key)]
+        commands.extend(GraphBuilder._generate_subcomponent_commands(root_key, data[root_key]))
+        return commands
+
+    @staticmethod
+    def _generate_subcomponent_commands(parent: str, data: Dict[str, Any]) -> List[str]:
+        """
+        Generate Cypher commands for the subcomponents.
+
+        Parameters:
+        - parent (str): Parent node alias.
+        - data (Dict[str, Any]): Input nested dictionary.
+
+        Returns:
+        - List[str]: List of Cypher commands.
+        """
+        commands = []
+        for key, value in data.items():
+            if key not in GraphBuilder.SPECIAL_KEYWORDS:
+                if isinstance(value, dict):
+                    node_alias = key.lower()
+                    commands.append(GraphBuilder._create_node(node_alias, key))
+                    commands.append(GraphBuilder._create_relationship(parent, node_alias, "HAS_" + key))
+                    commands.extend(GraphBuilder._generate_subcomponent_commands(node_alias, value))
+                else:
+                    # This is an attribute of the parent node, not a new node.
+                    continue
+            else:
+                # Handle special keywords
+                if key == "Type":
+                    continue  # We've already used this for node creation
+                for subkey, subvalue in value.items():
+                    if isinstance(subvalue, dict):
+                        subnode_alias = subkey.lower()
+                        commands.append(GraphBuilder._create_node(subnode_alias, subkey))
+                        commands.append(GraphBuilder._create_relationship(parent, subnode_alias, "HAS_" + subkey))
+                        commands.extend(GraphBuilder._generate_subcomponent_commands(subnode_alias, subvalue))
+                    else:
+                        node_alias = subkey.lower()
+                        commands.append(GraphBuilder._create_node(node_alias, subkey, {"value": subvalue}))
+                        commands.append(GraphBuilder._create_relationship(parent, node_alias, "HAS_" + key))
+        return commands
+
+    @staticmethod
+    def _create_node(alias: str, label: str, properties: Dict[str, Any] = None) -> str:
+        """
+        Create a Cypher command for a node.
+
+        Parameters:
+        - alias (str): The alias for the node.
         - label (str): The label of the node.
         - properties (Dict[str, Any], optional): The properties of the node.
 
         Returns:
-        - Tuple[str, str]: The Cypher command and the alias of the node.
+        - str: The Cypher command for the node.
         """
-        alias = label.replace(' ', '_').lower()
         if properties:
             props = ', '.join(f'{k}: "{v}"' if isinstance(v, str) else f'{k}: {v}' for k, v in properties.items())
-            return f'CREATE ({alias}:{label} {{{props}}})', alias
+            return f'CREATE ({alias}:{label} {{{props}}})'
         else:
-            return f'CREATE ({alias}:{label})', alias
+            return f'CREATE ({alias}:{label})'
 
     @staticmethod
     def _create_relationship(parent_alias: str, child_alias: str, rel_type: str) -> str:
         """
-        Create a relationship Cypher command.
+        Create a Cypher command for a relationship.
 
         Parameters:
         - parent_alias (str): The alias of the parent node.
@@ -89,51 +154,3 @@ class GraphBuilder:
         - str: The Cypher command for the relationship.
         """
         return f'CREATE ({parent_alias})-[:{rel_type}]->({child_alias})'
-
-    def generate_cypher(self, data: Dict[str, Any], parent_alias: str = None, relationship: str = "Subcomponent") -> \
-    List[str]:
-        """
-        Generate Cypher commands based on the input data.
-
-        Parameters:
-        - data (Dict[str, Any]): The input data structure.
-        - parent_alias (str, optional): The alias of the parent node.
-        - relationship (str, optional): The type of the relationship.
-
-        Returns:
-        - List[str]: The list of generated Cypher commands.
-        """
-        queries = []
-
-        for key, value in data.items():
-            # Handle simple key-value attributes
-            if not isinstance(value, dict):
-                if parent_alias:
-                    properties = {'value': value}
-                    query, alias = self._create_node(key, properties=properties)
-                    queries.append(query)
-                    queries.append(self._create_relationship(parent_alias, alias, relationship))
-            # Handle "Type" keyword
-            elif "Type" in value:
-                node_label = value["Type"]
-                properties = {k: v for k, v in value.items() if k != "Type" and not isinstance(v, dict)}
-                query, alias = self._create_node(node_label, properties=properties)
-                queries.append(query)
-                if parent_alias:
-                    queries.append(self._create_relationship(parent_alias, alias, f'HAS_{key}'))
-                nested_queries = self.generate_cypher(value, parent_alias=alias)
-                queries.extend(nested_queries)
-            # Handle special keywords
-            elif key in ["Resources", "Configuration", "Details"]:
-                nested_queries = self.generate_cypher(value, parent_alias=parent_alias, relationship=f'HAS_{key}')
-                queries.extend(nested_queries)
-            else:
-                properties = {k: v for k, v in value.items() if not isinstance(v, dict)}
-                query, alias = self._create_node(key, properties=properties)
-                queries.append(query)
-                if parent_alias:
-                    queries.append(self._create_relationship(parent_alias, alias, relationship))
-                nested_queries = self.generate_cypher(value, parent_alias=alias)
-                queries.extend(nested_queries)
-
-        return queries

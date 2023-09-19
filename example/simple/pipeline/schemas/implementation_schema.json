@@ -6,7 +6,7 @@
     "SubComponent": {
       "type": "object",
       "properties": {
-        "SchemaType": {"type": "string", "enum": ["Specification", "Implementation", "Infrastructure"]},
+        "SchemaType": {"type": "string", "enum": ["Specification", "Implementation", "Infrastructure", "DataContract"]},
         "Version": {"type": "string"},
         "Engine": {
           "type": "object",
