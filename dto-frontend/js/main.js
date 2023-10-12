@@ -1,7 +1,6 @@
 import Rete from 'rete';
 import ConnectionPlugin from 'rete-connection-plugin';
 import AlightRenderPlugin from 'rete-alight-render-plugin';
-import 'rete/build/rete.css;
 
 
 // Initialize Rete
