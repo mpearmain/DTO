@@ -16,30 +16,51 @@ def load_json(file_path):
         return json.load(file)
 
 
-# Loading the JSON schemas for each subcomponent
-specification_schema = load_json('./example/simple/pipeline/schemas/specification_schema.json')
-implementation_schema = load_json('./example/simple/pipeline/schemas/implementation_schema.json')
-infrastructure_schema = load_json('./example/simple/pipeline//schemas/infrastructure_schema.json')
+def load_json(file_path):
+    """Load JSON data from a file."""
+    with open(file_path) as file:
+        return json.load(file)
 
-# Load metadata from JSON files
-specification_metadata = load_json('./example/simple/pipeline/pipeline_config/specification_config.json')
-implementation_metadata = load_json('./example/simple/pipeline/pipeline_config/implementation_config.json')
-infrastructure_metadata = load_json('./example/simple/pipeline/pipeline_config/infrastructure_config.json')
 
-# Create SubComponent instances
-specification = SubComponent(schema=specification_schema)
-implementation = SubComponent(schema=implementation_schema)
-infrastructure = SubComponent(schema=infrastructure_schema)
+# Define paths for schemas and metadata
+paths = {
+    "specification": {
+        "schema": './example/simple/pipeline/schemas/specification_schema.json',
+        "metadata": './example/simple/pipeline/pipeline_config/specification_config.json'
+    },
+    "implementation": {
+        "schema": './example/simple/pipeline/schemas/implementation_schema.json',
+        "metadata": './example/simple/pipeline/pipeline_config/implementation_config.json'
+    },
+    "infrastructure": {
+        "schema": './example/simple/pipeline/schemas/infrastructure_schema.json',
+        "metadata": './example/simple/pipeline/pipeline_config/infrastructure_config.json'
+    },
+    "data": {
+        "schema": './example/simple/pipeline/schemas/data_schema.json',
+        "metadata": './example/simple/pipeline/pipeline_config/data_config.json'
+    }
+}
 
-# Load instances from metadata
-specification.load_instance(specification_metadata)
-implementation.load_instance(implementation_metadata)
-infrastructure.load_instance(infrastructure_metadata)
+subcomponents = {}
 
-# Create a Component instance
-pipeline = Component(name='data_pipeline', specification=specification, implementation=implementation,
-                     infrastructure=infrastructure)
+# Loop through each component, load schema and metadata, and create SubComponent instances
+for key, path_info in paths.items():
+    schema = load_json(path_info["schema"])
+    metadata = load_json(path_info["metadata"])
 
+    subcomponent = SubComponent(schema=schema)
+    subcomponent.load_instance(metadata)
+
+    subcomponents[key] = subcomponent
+
+# Create a Component instance using the subcomponents dictionary
+pipeline = Component(name='data_pipeline',
+                     specification=subcomponents['specification'],
+                     implementation=subcomponents['implementation'],
+                     infrastructure=subcomponents['infrastructure'],
+                     data=subcomponents['data']
+)
 # Get the combined configuration
 configuration = pipeline.configure()
 print(list(configuration['data_pipeline'].keys()))
