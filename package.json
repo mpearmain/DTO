@@ -1,0 +1,30 @@
+{
+  "name": "dto",
+  "version": "1.0.0",
+  "description": "\"This repository contains code for generating configuration objects to create digital twins via a component structure. It includes a core Component, which serves as the foundational building block for defining and validating components within the digital twin framework. The Component provides abstract classes for defining and validating components, such as specification, implementation, and infrastructure. These components are validated against JSON schemas\"",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mpearmain/DTO.git"
+  },
+  "keywords": [
+    "digital-twin"
+  ],
+  "author": "Michael Pearmain",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mpearmain/DTO/issues"
+  },
+  "homepage": "https://github.com/mpearmain/DTO#readme",
+  "dependencies": {
+    "rete": "^2.0.2",
+    "rete-alight-render-plugin": "^0.1.5",
+    "rete-connection-plugin": "^2.0.0"
+  }
+}
