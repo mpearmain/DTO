@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/mpearmain/DTO#readme",
   "dependencies": {
+    "parcel": "^2.10.0",
     "rete": "^2.0.2",
     "rete-alight-render-plugin": "^0.1.5",
     "rete-connection-plugin": "^2.0.0"
