@@ -1,55 +1,123 @@
-// Fetch JSON schema from the specified path
-async function fetchSchema(path) {
-    const response = await fetch(path);
-    if (!response.ok) {
-        throw new Error(`Failed to fetch ${path}: ${response.statusText}`);
+// Initialize Rete
+const container = document.querySelector('#rete');
+const editor = new Rete.NodeEditor('demo@0.1.0', container);
+editor.use(ConnectionPlugin.default);
+editor.use(AlightRenderPlugin);
+
+// Define the socket
+const dataSocket = new Rete.Socket('DataSocket');
+
+// Define the DataComponent
+class DataComponent extends Rete.Component {
+    constructor(){
+        super("Data");
     }
-    return await response.json();
+
+    builder(node) {
+        let out1 = new Rete.Output('out', "Output", dataSocket);
+        node.addOutput(out1);
+    }
+
+    worker() {}
 }
 
-// Fetch all required schemas
-async function fetchAllSchemas() {
-    return {
-        dataSchema: await fetchSchema('./example/simple/pipeline/schemas/data_schema.json'),
-        implementationSchema: await fetchSchema('./example/simple/pipeline/schemas/implementation_schema.json'),
-        infrastructureSchema: await fetchSchema('./example/simple/pipeline/schemas/infrastructure_schema.json'),
-        specificationSchema: await fetchSchema('./example/simple/pipeline/schemas/specification_schema.json')
-    };
+// Define the InfrastructureComponent
+class InfrastructureComponent extends Rete.Component {
+    constructor(){
+        super("Infrastructure");
+    }
+
+    builder(node) {
+        let out1 = new Rete.Output('out', "Output", dataSocket);
+        node.addOutput(out1);
+    }
+
+    worker() {}
 }
 
-// Initialize Rete.js editor with fetched schemas
-async function initializeEditor() {
-    const { dataSchema, implementationSchema, infrastructureSchema, specificationSchema } = await fetchAllSchemas();
+// Define the ImplementationComponent
+class ImplementationComponent extends Rete.Component {
+    constructor(){
+        super("Implementation");
+    }
 
-    var container = document.querySelector('#rete');
-    var editor = new Rete.NodeEditor('demo@0.1.0', container);
-    editor.use(Rete.ConnectionPlugin.default());
-    editor.use(Rete.AlbersPlugin.default());
+    builder(node) {
+        let out1 = new Rete.Output('out', "Output", dataSocket);
+        node.addOutput(out1);
+    }
 
-    var components = ['MainComponent', 'Data', 'Infrastructure', 'Implementation', 'Specification'];
+    worker() {}
+}
 
-    components.forEach(name => {
-        var component = new Rete.Component(name);
+// Define the SpecificationComponent
+class SpecificationComponent extends Rete.Component {
+    constructor(){
+        super("Specification");
+    }
 
-        component.builder(node => {
-            var out1 = new Rete.Output('json', 'JSON', Rete.numSocket);
-            node.addOutput(out1);
+    builder(node) {
+        let out1 = new Rete.Output('out', "Output", dataSocket);
+        node.addOutput(out1);
+    }
 
-            // Here, you can add controls to the node based on the JSON schema for validation
-            // For example, if the schema requires a certain field, you can add an input control for that field
-            // Use the fetched JSON schemas to determine the required controls and validation rules
-        });
+    worker() {}
+}
 
-        editor.register(component);
-    });
+// Define the MainComponent that connects the sub-components
+class MainComponent extends Rete.Component {
+    constructor(){
+        super("MainComponent");
+    }
 
-    editor.on('process nodecreated noderemoved connectioncreated connectionremoved', async () => {
-        await editor.trigger('process');
-    });
+    builder(node) {
+        let dataInput = new Rete.Input('dataIn', "Data", dataSocket);
+        let infraInput = new Rete.Input('infraIn', "Infrastructure", dataSocket);
+        let implInput = new Rete.Input('implIn', "Implementation", dataSocket);
+        let specInput = new Rete.Input('specIn', "Specification", dataSocket);
+        node.addInput(dataInput).addInput(infraInput).addInput(implInput).addInput(specInput);
+    }
 
-    editor.view.resize();
+    worker() {}
+}
+
+// Register the components
+const dataComponent = new DataComponent();
+const infrastructureComponent = new InfrastructureComponent();
+const implementationComponent = new ImplementationComponent();
+const specificationComponent = new SpecificationComponent();
+const mainComponent = new MainComponent();
+
+editor.register(dataComponent);
+editor.register(infrastructureComponent);
+editor.register(implementationComponent);
+editor.register(specificationComponent);
+editor.register(mainComponent);
+
+// Add nodes to the editor
+(async () => {
+    const dataNode = await dataComponent.createNode();
+    const infrastructureNode = await infrastructureComponent.createNode();
+    const implementationNode = await implementationComponent.createNode();
+    const specificationNode = await specificationComponent.createNode();
+    const mainNode = await mainComponent.createNode();
+
+    dataNode.position = [80, 100];
+    infrastructureNode.position = [80, 250];
+    implementationNode.position = [80, 400];
+    specificationNode.position = [80, 550];
+    mainNode.position = [400, 300];
+
+    editor.addNode(dataNode);
+    editor.addNode(infrastructureNode);
+    editor.addNode(implementationNode);
+    editor.addNode(specificationNode);
+    editor.addNode(mainNode);
+
+    // Connect nodes to the MainComponent
+    editor.connect(dataNode.outputs.get('out'), mainNode.inputs.get('dataIn'));
+    editor.connect(infrastructureNode.outputs.get('out'), mainNode.inputs.get('infraIn'));
+    editor.connect(implementationNode.outputs.get('out'), mainNode.inputs.get('implIn'));
+    editor.connect(specificationNode.outputs.get('out'), mainNode.inputs.get('specIn'));
+
     editor.trigger('process');
-}
-
-// Call the initialization function
-initializeEditor();
+})();
