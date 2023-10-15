@@ -1,0 +1,9 @@
+/* dto-frontend/src/styles.css */
+.App {
+  font-family: sans-serif;
+}
+body {
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
