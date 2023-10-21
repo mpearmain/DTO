@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import { NodeEditor, GetSchemes, ClassicPreset } from 'rete';
+import { NodeEditor, ClassicPreset } from 'rete';
 import { AreaPlugin, AreaExtensions } from 'rete-area-plugin';
 import {
   ConnectionPlugin,
@@ -10,44 +10,14 @@ import {
   AutoArrangePlugin,
   Presets as ArrangePresets,
 } from 'rete-auto-arrange-plugin';
-import {
-  ContextMenuExtra,
-  ContextMenuPlugin,
-  Presets as ContextMenuPresets,
-} from 'rete-context-menu-plugin';
+import { ContextMenuExtra } from 'rete-context-menu-plugin';
+import { StyledNode } from './StyledNode';
+import { Schemes } from './shared-types';
+import { NodeA } from './nodes/NodeA';
+import { NodeB } from './nodes/NodeB';
+import { contextMenu } from './context-menu';
 
-type Node = NodeA | NodeB;
-type Schemes = GetSchemes<Node, Connection<Node, Node>>;
 type AreaExtra = ReactArea2D<Schemes> | ContextMenuExtra;
-
-class NodeA extends ClassicPreset.Node {
-  height = 140;
-  width = 200;
-
-  constructor(socket: ClassicPreset.Socket) {
-    super('NodeA');
-
-    this.addControl('a', new ClassicPreset.InputControl('text', {}));
-    this.addOutput('a', new ClassicPreset.Output(socket));
-  }
-}
-
-class NodeB extends ClassicPreset.Node {
-  height = 140;
-  width = 200;
-
-  constructor(socket: ClassicPreset.Socket) {
-    super('NodeB');
-
-    this.addControl('b', new ClassicPreset.InputControl('text', {}));
-    this.addInput('b', new ClassicPreset.Input(socket));
-  }
-}
-
-class Connection<
-  A extends Node,
-  B extends Node,
-> extends ClassicPreset.Connection<A, B> {}
 
 export async function createEditor(container: HTMLElement) {
   const socket = new ClassicPreset.Socket('socket');
@@ -57,12 +27,12 @@ export async function createEditor(container: HTMLElement) {
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
   const render = new ReactPlugin<Schemes, AreaExtra>({ createRoot });
   const arrange = new AutoArrangePlugin<Schemes>();
-  const contextMenu = new ContextMenuPlugin<Schemes>({
-    items: ContextMenuPresets.classic.setup([
-      ['NodeA', () => new NodeA(socket)],
-      ['Extra', [['NodeB', () => new NodeB(socket)]]],
-    ]),
-  });
+  // const contextMenu = new ContextMenuPlugin<Schemes>({
+  //   items: ContextMenuPresets.classic.setup([
+  //     ['NodeA', () => new NodeA(socket)],
+  //     ['Extra', [['NodeB', () => new NodeB(socket)]]],
+  //   ]),
+  // });
 
   area.use(contextMenu);
 
@@ -71,7 +41,15 @@ export async function createEditor(container: HTMLElement) {
   });
 
   render.addPreset(Presets.contextMenu.setup());
-  render.addPreset(Presets.classic.setup());
+  render.addPreset(
+    Presets.classic.setup({
+      customize: {
+        node() {
+          return StyledNode;
+        },
+      },
+    }),
+  );
 
   connection.addPreset(ConnectionPresets.classic.setup());
 

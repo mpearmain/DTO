@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/component-schema",
+  "title": "Component X",
+  "description": "A basic component",
+  "type": "object",
+  "properties": {
+    "Data": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Data Schema",
+      "description": "Schema for defining the data attributes of a digital twin component.",
+      "type": "object",
+      "properties": {
+        "SubComponent": {
+          "type": "object",
+          "properties": {
+            "SchemaType": {
+              "type": "string",
+              "enum": [
+                "Specification",
+                "Implementation",
+                "Infrastructure",
+                "DataContract"
+              ]
+            },
+            "Version": {
+              "type": "string"
+            },
+            "Name": {
+              "type": "string"
+            },
+            "Description": {
+              "type": "string"
+            },
+            "Schema": {
+              "type": "object",
+              "properties": {
+                "Type": {
+                  "type": "string",
+                  "enum": ["Table"]
+                },
+                "Details": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "Name": { "type": "string" },
+                      "Type": { "type": "string" },
+                      "Description": { "type": "string" },
+                      "Source": { "type": "string" },
+                      "Privacy": { "type": "string" },
+                      "BusinessCriticality": { "type": "string" },
+                      "Transformation": {
+                        "type": "object",
+                        "properties": {
+                          "Steps": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "Description": { "type": "string" },
+                                "Dependencies": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "Name": { "type": "string" },
+                                      "Type": { "type": "string" },
+                                      "Details": { "type": "string" }
+                                    },
+                                    "required": ["Name", "Type", "Details"]
+                                  }
+                                }
+                              },
+                              "required": ["Description", "Dependencies"]
+                            }
+                          }
+                        },
+                        "required": ["Steps"]
+                      }
+                    },
+                    "required": [
+                      "Name",
+                      "Type",
+                      "Description",
+                      "Source",
+                      "Privacy",
+                      "BusinessCriticality",
+                      "Transformation"
+                    ]
+                  }
+                }
+              },
+              "required": ["Type", "Details"]
+            },
+            "administration": {
+              "type": "object",
+              "properties": {
+                "Type": {
+                  "type": "string",
+                  "enum": ["Governance"]
+                },
+                "Details": {
+                  "type": "object",
+                  "properties": {
+                    "DataSteward": { "type": "string" },
+                    "DataQuality": { "type": "string" },
+                    "DataClassification": { "type": "string" },
+                    "DataRetention": { "type": "string" }
+                  },
+                  "required": [
+                    "DataSteward",
+                    "DataQuality",
+                    "DataClassification",
+                    "DataRetention"
+                  ]
+                }
+              },
+              "required": ["Type", "Details"]
+            },
+            "Security": {
+              "type": "object",
+              "properties": {
+                "Type": {
+                  "type": "string",
+                  "enum": ["AccessControl"]
+                },
+                "Details": {
+                  "type": "object",
+                  "properties": {
+                    "AuthenticationService": { "type": "string" },
+                    "AuthorizationService": { "type": "string" },
+                    "AccessPolicies": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
+                  },
+                  "required": [
+                    "AuthenticationService",
+                    "AuthorizationService",
+                    "AccessPolicies"
+                  ]
+                }
+              },
+              "required": ["Type", "Details"]
+            }
+          },
+          "required": [
+            "SchemaType",
+            "Version",
+            "Name",
+            "Description",
+            "Schema",
+            "administration",
+            "Security"
+          ]
+        }
+      },
+      "required": ["SubComponent"]
+    }
+  }
+}
