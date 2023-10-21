@@ -6,12 +6,48 @@ import {
   Presets as ConnectionPresets,
 } from 'rete-connection-plugin';
 import { ReactPlugin, Presets, ReactArea2D } from 'rete-react-plugin';
+import {
+  AutoArrangePlugin,
+  Presets as ArrangePresets,
+} from 'rete-auto-arrange-plugin';
+import {
+  ContextMenuExtra,
+  ContextMenuPlugin,
+  Presets as ContextMenuPresets,
+} from 'rete-context-menu-plugin';
 
-type Schemes = GetSchemes<
-  ClassicPreset.Node,
-  ClassicPreset.Connection<ClassicPreset.Node, ClassicPreset.Node>
->;
-type AreaExtra = ReactArea2D<Schemes>;
+type Node = NodeA | NodeB;
+type Schemes = GetSchemes<Node, Connection<Node, Node>>;
+type AreaExtra = ReactArea2D<Schemes> | ContextMenuExtra;
+
+class NodeA extends ClassicPreset.Node {
+  height = 140;
+  width = 200;
+
+  constructor(socket: ClassicPreset.Socket) {
+    super('NodeA');
+
+    this.addControl('a', new ClassicPreset.InputControl('text', {}));
+    this.addOutput('a', new ClassicPreset.Output(socket));
+  }
+}
+
+class NodeB extends ClassicPreset.Node {
+  height = 140;
+  width = 200;
+
+  constructor(socket: ClassicPreset.Socket) {
+    super('NodeB');
+
+    this.addControl('b', new ClassicPreset.InputControl('text', {}));
+    this.addInput('b', new ClassicPreset.Input(socket));
+  }
+}
+
+class Connection<
+  A extends Node,
+  B extends Node,
+> extends ClassicPreset.Connection<A, B> {}
 
 export async function createEditor(container: HTMLElement) {
   const socket = new ClassicPreset.Socket('socket');
@@ -20,40 +56,45 @@ export async function createEditor(container: HTMLElement) {
   const area = new AreaPlugin<Schemes, AreaExtra>(container);
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
   const render = new ReactPlugin<Schemes, AreaExtra>({ createRoot });
+  const arrange = new AutoArrangePlugin<Schemes>();
+  const contextMenu = new ContextMenuPlugin<Schemes>({
+    items: ContextMenuPresets.classic.setup([
+      ['NodeA', () => new NodeA(socket)],
+      ['Extra', [['NodeB', () => new NodeB(socket)]]],
+    ]),
+  });
+
+  area.use(contextMenu);
 
   AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
     accumulating: AreaExtensions.accumulateOnCtrl(),
   });
 
+  render.addPreset(Presets.contextMenu.setup());
   render.addPreset(Presets.classic.setup());
 
   connection.addPreset(ConnectionPresets.classic.setup());
 
+  arrange.addPreset(ArrangePresets.classic.setup());
+
   editor.use(area);
   area.use(connection);
   area.use(render);
+  area.use(arrange);
 
   AreaExtensions.simpleNodesOrder(area);
 
-  // const a = new ClassicPreset.Node('A');
-  // a.addControl('a', new ClassicPreset.InputControl('text', { initial: 'a' }));
-  // a.addOutput('a', new ClassicPreset.Output(socket));
-  // await editor.addNode(a);
+  const a = new NodeA(socket);
+  const b = new NodeB(socket);
 
-  // const b = new ClassicPreset.Node('B');
-  // b.addControl('b', new ClassicPreset.InputControl('text', { initial: 'b' }));
-  // b.addInput('b', new ClassicPreset.Input(socket));
-  // await editor.addNode(b);
+  await editor.addNode(a);
+  await editor.addNode(b);
 
-  // await editor.addConnection(new ClassicPreset.Connection(a, 'a', b, 'b'));
+  await editor.addConnection(new ClassicPreset.Connection(a, 'a', b, 'b'));
 
-  // await area.translate(a.id, { x: 0, y: 0 });
-  // await area.translate(b.id, { x: 270, y: 0 });
+  await arrange.layout();
+  AreaExtensions.zoomAt(area, editor.getNodes());
 
-  setTimeout(() => {
-    // wait until nodes rendered because they dont have predefined width and height
-    AreaExtensions.zoomAt(area, editor.getNodes());
-  }, 10);
   return {
     destroy: () => area.destroy(),
   };
